@@ -6,14 +6,6 @@ import jobs from './modules/jobs';
 import worksites from './modules/worksites'
 
 export default createStore({
-  modules: {
-    clients,
-    auth,
-    employees,
-    equipments,
-    worksites,
-    jobs
-  },
   state: {
   },
   mutations: {
@@ -21,5 +13,10 @@ export default createStore({
   actions: {
   },
   modules: {
-  }
+    clients,
+    employees,
+    equipments,
+    worksites,
+    jobs
+  },
 })
