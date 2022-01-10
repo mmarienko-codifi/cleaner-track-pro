@@ -7,4 +7,3 @@
     <router-link class="nav__link" to="/jobs">Jobs</router-link>
   </div>
 </template>
-
