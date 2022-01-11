@@ -1,15 +1,26 @@
 <template>
-  <Navigation v-if="$route.name !== 'Home'" />
-  <router-view />
+  <Header/>
+  <div class="main">
+    <router-view />
+  </div>
+  <Footer/>
 </template>
 
 <script>
-import Navigation from './components/Navigation.vue';
+import Header from '@/components/Header.vue';
+import Footer from '@/components/Footer.vue';
 
 export default {
   name: 'App',
   components: {
-    Navigation,
+    Header,
+    Footer,
   },
 };
 </script>
+
+<style lang="scss">
+@import '@/styles/reset.scss';
+@import '@/styles/global.scss';
+@import '@/styles/vars.scss';
+</style>

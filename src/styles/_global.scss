@@ -1,0 +1,27 @@
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  font-family:  Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeSpeed;
+  color: var(--color-text);
+}
+
+.main {
+  position: relative;
+  flex: 1 0 auto;
+}
+
+.footer,
+.header {
+  flex-shrink: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin:  0 auto;
+  padding: 0 15px;
+}
