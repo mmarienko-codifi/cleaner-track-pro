@@ -46,9 +46,6 @@ export default {
     height: 100%;
   }
 
-  &__item {
-  }
-
   &__link {
     display: inline-block;
     padding: 10px 5px;
