@@ -2,7 +2,7 @@
   <div class="header">
     <div class="container">
       <div class="header__inner">
-        <Navigation v-if="$route.name !== 'Home'" />
+        <Navigation/>
       </div>
     </div>
   </div>

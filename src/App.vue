@@ -1,20 +1,25 @@
 <template>
-  <Header/>
-  <div class="main">
+  <component :is="layout">
     <router-view />
-  </div>
-  <Footer/>
+  </component>
 </template>
 
 <script>
-import Header from '@/components/Header.vue';
-import Footer from '@/components/Footer.vue';
+import AuthLayout from '@/layouts/Auth.vue';
+import DefaultLayout from '@/layouts/Default.vue';
+import EmptyLayout from '@/layouts/Empty.vue';
 
 export default {
   name: 'App',
   components: {
-    Header,
-    Footer,
+    AuthLayout,
+    DefaultLayout,
+    EmptyLayout,
+  },
+  computed: {
+    layout() {
+      return (this.$route.meta.layout) + '-layout';
+    },
   },
 };
 </script>
