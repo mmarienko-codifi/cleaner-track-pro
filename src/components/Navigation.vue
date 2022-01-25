@@ -16,11 +16,11 @@ export default {
   data() {
     return {
       links: [
-        { title: 'Clients', path: '/clients' },
-        { title: 'Worksites', path: '/worksites' },
-        { title: 'Employees', path: '/employees' },
-        { title: 'Equipments', path: '/equipments' },
-        { title: 'Jobs', path: '/jobs' },
+        { title: 'Clients', path: '/clients/list' },
+        { title: 'Worksites', path: '/worksites/list' },
+        { title: 'Employees', path: '/employees/list' },
+        { title: 'Equipments', path: '/equipments/list' },
+        { title: 'Jobs', path: '/jobs/list' },
       ],
     };
   },

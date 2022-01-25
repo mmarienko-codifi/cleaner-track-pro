@@ -2,7 +2,9 @@
   <div class="footer">
     <div class="container">
       <div class="footer__inner">
-        <div class="footer__message">@CleanerTrackPro</div>
+        <router-link class="footer__button button button--logout" :to="'/logout'">
+          Logout
+        </router-link>
       </div>
     </div>
   </div>
@@ -16,7 +18,12 @@ export default {
 
 <style lang="scss">
 .footer {
-  padding: 30px;
+  position: fixed;
+  left: calc(50% - 300px / 2);
+  bottom: 0;
+
+  width: 300px;
+  padding: 10px;
 
   &__inner {
     display: flex;
@@ -24,9 +31,8 @@ export default {
     justify-content: center;
   }
 
-  &__message {
-    font-size: 1.3em;
-    font-weight: bold;
+  &__button{
+    font-size: 0.9rem;
   }
 }
 </style>

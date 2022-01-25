@@ -12,15 +12,14 @@
 
 <script>
 export default {
-  name: 'Home',
   data() {
     return {
       links: [
-        { title: 'Clients', path: '/clients' },
-        { title: 'Worksites', path: '/worksites' },
-        { title: 'Employees', path: '/employees' },
-        { title: 'Equipments', path: '/equipments' },
-        { title: 'Jobs', path: '/jobs' },
+        { title: 'Clients', path: '/clients/list' },
+        { title: 'Worksites', path: '/worksites/list' },
+        { title: 'Employees', path: '/employees/list' },
+        { title: 'Equipments', path: '/equipments/list' },
+        { title: 'Jobs', path: '/jobs/list' },
       ],
     };
   },
@@ -29,21 +28,17 @@ export default {
 
 <style lang="scss" scoped>
 .home {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 
-  padding: 20px;
-
-  transform: translate(-50%, -50%);
-    
   &__list {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
   }
 
   &__link {
@@ -53,9 +48,9 @@ export default {
     font-size: 1.5rem;
     font-weight: bold;
 
-    transition: color .1s ease;
+    transition: color 0.1s ease;
 
-    &:hover{
+    &:hover {
       color: var(--color-accent);
     }
   }

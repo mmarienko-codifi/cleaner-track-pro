@@ -15,9 +15,7 @@
 </template>
 
 <script>
-export default {
-  name: 'Login',
-};
+
 </script>
 
 <style lang="scss" scoped>
@@ -74,22 +72,7 @@ export default {
   }
 
   &__button {
-    display: inline-block;
     margin-top: 30px;
-    padding: 10px;
-
-    background-color: var(--color-rare);
-    border-radius: 10px;
-
-    font-weight: bold;
-    color: var(--color-main);
-    letter-spacing: 0.05em;
-
-    transition: background-color .3s ease;
-
-    &:hover {
-      background-color: var(--color-accent);
-    }
   }
 }
 </style>

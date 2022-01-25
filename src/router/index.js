@@ -3,45 +3,52 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
   {
     path: '/',
-    name: 'Home',
     meta: { layout: 'empty' },
-    component: () => import('@/views/Home.vue')
+    component: () => import('@/views/Main.vue')
   },
   {
     path: '/login',
-    name: 'Login',
     meta: { layout: 'auth' },
-    component: () => import('@/views/Login.vue')
+    component: () => import('@/views/auth/Login.vue')
   },
   {
-    path: '/clients',
-    name: 'Clients',
-    meta: { layout: 'default' },
-    component: () => import('@/views/Clients.vue')
+    path: '/clients/list',
+    component: () => import('@/views/client/List.vue'),
   },
   {
-    path: '/employees',
-    name: 'Employees',
-    meta: { layout: 'default' },
-    component: () => import('@/views/Employees.vue')
+    path: '/clients/create',
+    component: () => import('@/views/client/New.vue'),
   },
   {
-    path: '/equipments',
-    name: 'Equipments',
-    meta: { layout: 'default' },
-    component: () => import('@/views/Equipments.vue')
+    path: '/clients/:id/read',
+    props: true,
+    component: () => import('@/views/client/Info.vue'),
   },
   {
-    path: '/jobs',
-    name: 'Jobs',
-    meta: { layout: 'default' },
-    component: () => import('@/views/Jobs.vue')
+    path: '/clients/:id/update',
+    props: true,
+    component: () => import('@/views/client/Edit.vue')
   },
   {
-    path: '/worksites',
-    name: 'Worksites',
-    meta: { layout: 'default' },
-    component: () => import('@/views/Worksites.vue')
+    path: '/employees/list',
+    component: () => import('@/views/employee/List.vue')
+  },
+  {
+    path: '/equipments/list',
+    component: () => import('@/views/equipment/List.vue')
+  },
+  {
+    path: '/jobs/list',
+    component: () => import('@/views/job/List.vue')
+  },
+  {
+    path: '/worksites/list',
+    component: () => import('@/views/worksite/List.vue')
+  },
+  {
+    path: '/:notFound(.*)',
+    meta: { layout: 'empty' },
+    component: () => import('@/views/404.vue')
   }
 ]
 
