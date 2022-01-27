@@ -1,37 +1,18 @@
 <template>
   <div class="clients">
     <ul class="clients__list list" v-if="hasClients">
-      <li class="list__item"  :class="client.status ? '' : 'list__item--deactivated'" v-for="client in getClients" :key="client.id">
-        <router-link class="list__title" :to="'/clients/' + client.id + '/read'">
-          {{ client.name }} ({{ client.person }}) 
+      <li class="list__item" :class="client.status ? '' : 'list__item--deactivated'" v-for="client in getClients" :key="client.id">
+        <router-link class="list__link" :to="'/clients/' + client.id + '/read'">
+          <span class="list__title"> {{ client.name }} ({{ client.person }}) </span>
+          <router-link class="list__button button" :to="'/clients/' + client.id + '/read'"> Read </router-link>
+          <router-link class="list__button button button--edit" :to="'/clients/' + client.id + '/update'"> Update </router-link>
+          <router-link class="list__button button button--delete" :to="'/clients/' + client.id + '/delete'"> Delete </router-link>
         </router-link>
-        <span class="list__deactivated"  v-if="!client.status">
-            deactivated
-        </span>
-        <router-link
-          class="list__button button"
-          :to="'/clients/' + client.id + '/read'"
-        >
-          Read
-        </router-link>
-        <router-link
-          class="list__button button button--edit"
-          :to="'/clients/' + client.id + '/update'"
-        >
-          Update
-        </router-link>
-        <router-link
-          class="list__button button button--delete"
-          :to="'/clients/' + client.id + '/delete'"
-        >
-          Delete
-        </router-link>
+        <span class="list__deactivated" v-if="!client.status"> deactivated </span>
       </li>
     </ul>
-    <span class="clients__span" v-else>No clients found</span>
-    <router-link class="clients__button button" :to="'/clients/create'">
-      New client
-    </router-link>
+    <div class="list__not-found" v-else>No clients found</div>
+    <router-link class="clients__button button" :to="'/clients/create'"> New client </router-link>
   </div>
 </template>
 
@@ -43,7 +24,7 @@ export default {
     },
     hasClients() {
       return this.$store.getters.hasClients;
-    }
+    },
   },
 };
 </script>
@@ -51,12 +32,10 @@ export default {
 <style lang="scss" scoped>
 .clients {
   &__button {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px 0;
+    padding: 7px 10px;
     width: 100%;
 
-    text-align: center;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
   }
 }
 </style>

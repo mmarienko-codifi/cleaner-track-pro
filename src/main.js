@@ -1,8 +1,8 @@
-import { createApp } from 'vue'
+import { createApp } from 'vue';
 import { initializeApp } from 'firebase/app';
-import App from './App.vue'
-import store from './store'
-import router from './router'
+import App from './App.vue';
+import store from './store';
+import router from './router';
 
 initializeApp({
   apiKey: process.env.FIREBASE_API_KEY,
@@ -10,7 +10,7 @@ initializeApp({
   projectId: process.env.FIREBASE_PROJECT_ID,
   storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
   messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.FIREBASE_APP_ID
+  appId: process.env.FIREBASE_APP_ID,
 });
 
-createApp(App).use(router).use(store).mount('#app')
+createApp(App).use(router).use(store).mount('#app');

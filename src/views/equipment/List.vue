@@ -1,14 +1,10 @@
 <template>
   <div class="equipments">
-    <router-link class="equipments__button button" :to="'/equipments/new'">
-      New equipment
-    </router-link>
+    <router-link class="equipments__button button" :to="'/equipments/new'"> New equipment </router-link>
   </div>
 </template>
 
-<script>
-
-</script>
+<script></script>
 
 <style lang="scss" scoped>
 .equipments {
@@ -24,7 +20,7 @@
   border-radius: 10px;
 
   &__button {
-    margin-top: 30px; 
+    margin-top: 30px;
   }
 }
 </style>

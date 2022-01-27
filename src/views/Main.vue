@@ -2,9 +2,7 @@
   <div class="home">
     <ul class="home__list">
       <li class="home__item" v-for="link in links" :key="link.path">
-        <router-link class="home__link" :to="link.path">{{
-          link.title
-        }}</router-link>
+        <router-link class="home__link" :to="link.path">{{ link.title }}</router-link>
       </li>
     </ul>
   </div>

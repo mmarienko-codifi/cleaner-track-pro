@@ -2,9 +2,7 @@
   <div class="nav">
     <ul class="nav__list">
       <li class="nav__item" v-for="link in links" :key="link.path">
-        <router-link class="nav__link" :to="link.path">{{
-          link.title
-        }}</router-link>
+        <router-link class="nav__link" :class="{ 'router-link-active': this.$route.path.indexOf(link.path.replace('list', '')) == 0}" :to="link.path">{{ link.title }}</router-link>
       </li>
     </ul>
   </div>
@@ -30,7 +28,7 @@ export default {
 <style lang="scss" scoped>
 .nav {
   padding: 30px;
-  
+
   &__list {
     display: flex;
     align-items: center;
@@ -55,7 +53,7 @@ export default {
 
     font-weight: bold;
 
-    &.router-link-exact-active {
+    &.router-link-active {
       color: var(--color-accent);
     }
   }

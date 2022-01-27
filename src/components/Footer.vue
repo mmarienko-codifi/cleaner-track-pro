@@ -2,9 +2,7 @@
   <div class="footer">
     <div class="container">
       <div class="footer__inner">
-        <router-link class="footer__button button button--logout" :to="'/logout'">
-          Logout
-        </router-link>
+        <router-link class="footer__button button button--logout" :to="'/logout'"> Logout </router-link>
       </div>
     </div>
   </div>
@@ -16,23 +14,13 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .footer {
-  position: fixed;
-  left: calc(50% - 300px / 2);
-  bottom: 0;
+  margin: 0 auto;
 
-  width: 300px;
-  padding: 10px;
-
-  &__inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  &__button{
-    font-size: 0.9rem;
+  &__button {
+    padding: 5px 30px;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
   }
 }
 </style>

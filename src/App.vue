@@ -5,14 +5,14 @@
 </template>
 
 <script>
-import AuthLayout from '@/layouts/Auth.vue';
+import HomeLayout from '@/layouts/Home.vue';
 import DefaultLayout from '@/layouts/Default.vue';
 import EmptyLayout from '@/layouts/Empty.vue';
 
 export default {
   name: 'App',
   components: {
-    AuthLayout,
+    HomeLayout,
     DefaultLayout,
     EmptyLayout,
   },
@@ -25,7 +25,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/styles/reset.scss';
-@import '@/styles/global.scss';
-@import '@/styles/vars.scss';
+@import '@/assets/styles/reset.scss';
+@import '@/assets/styles/global.scss';
+@import '@/assets/styles/vars.scss';
 </style>

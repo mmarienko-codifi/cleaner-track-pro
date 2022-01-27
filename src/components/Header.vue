@@ -2,7 +2,7 @@
   <div class="header">
     <div class="container">
       <div class="header__inner">
-        <Navigation/>
+        <Navigation />
       </div>
     </div>
   </div>

@@ -1,15 +1,10 @@
 <template>
   <div class="jobs">
-
-    <router-link class="jobs__button button" :to="'/jobs/new'">
-      New job
-    </router-link>
+    <router-link class="jobs__button button" :to="'/jobs/new'"> New job </router-link>
   </div>
 </template>
 
-<script>
-
-</script>
+<script></script>
 
 <style lang="scss" scoped>
 .jobs {
@@ -25,7 +20,7 @@
   border-radius: 10px;
 
   &__button {
-    margin-top: 30px; 
+    margin-top: 30px;
   }
 }
 </style>

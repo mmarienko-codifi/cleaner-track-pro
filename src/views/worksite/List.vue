@@ -1,14 +1,10 @@
 <template>
   <div class="worksites">
-    <router-link class="worksites__button button" :to="'/worksites/new'">
-      New worksite
-    </router-link>
+    <router-link class="worksites__button button" :to="'/worksites/new'"> New worksite </router-link>
   </div>
 </template>
 
-<script>
-
-</script>
+<script></script>
 
 <style lang="scss" scoped>
 .worksites {
@@ -24,7 +20,7 @@
   border-radius: 10px;
 
   &__button {
-    margin-top: 30px; 
+    margin-top: 30px;
   }
 }
 </style>

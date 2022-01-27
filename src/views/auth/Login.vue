@@ -3,37 +3,35 @@
     <form class="login__form">
       <div class="login__field">
         <label class="login__label" for="username">Username</label>
-        <input class="login__input" name="username" type="text">
+        <input class="login__input" name="username" type="text" />
       </div>
       <div class="login__field">
         <label class="login__label" for="password">Password</label>
-        <input class="login__input" name="password" type="password">
+        <input class="login__input" name="password" type="password" />
       </div>
       <button class="login__button button">Login</button>
     </form>
   </div>
 </template>
 
-<script>
-
-</script>
+<script></script>
 
 <style lang="scss" scoped>
 .login {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 
-  transform: translate(-50%, -50%);
-    
   &__form {
     display: flex;
     flex-direction: column;
-    padding: 30px;
+    padding: 50px 30px 40px;
     min-width: 250px;
 
     background: var(--color-form);
-    border-radius: 10px;
+    border-radius: var(--border-radius);
   }
 
   &__field {
@@ -41,10 +39,17 @@
     align-items: center;
     flex-direction: column;
     justify-content: space-between;
-    margin-top: 10px;
+
+    & + & {
+      margin-top: 20px;
+    }
 
     @media (min-width: 768px) {
       flex-direction: row;
+
+      & + & {
+        margin-top: 10px;
+      }
     }
   }
 
@@ -57,22 +62,24 @@
 
   &__input {
     width: 100%;
-    height: 30px;
+    padding: 5px 7px;
     margin-top: 10px;
-    padding: 5px;
 
-    border-radius: 5px;
+    border-radius: calc(var(--border-radius) - 5px);
+
+    text-align: center;
 
     @media (min-width: 768px) {
-      margin-top: 0;
       width: 60%;
 
-      border-radius: 0;
+      text-align: left;
     }
   }
 
   &__button {
     margin-top: 30px;
+
+    border-radius: calc(var(--border-radius) - 2px);
   }
 }
 </style>
