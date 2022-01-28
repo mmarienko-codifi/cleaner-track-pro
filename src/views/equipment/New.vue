@@ -1,7 +1,7 @@
 <template>
   <ErrorPopup v-if="error" :message="error" />
-  <div class="client" v-else>
-    <form class="client__form form" @submit.prevent="submitForm">
+  <div class="equipment" v-else>
+    <form class="equipment__form form" @submit.prevent="submitForm">
       <div class="form__field" :class="{ 'form__field--invalid': !name.isValid }">
         <label class="form__label">
           <span class="form__span">Name</span>
@@ -203,13 +203,13 @@ export default {
       };
 
       try {
-        await this.$store.dispatch('addClient', formData);
+        await this.$store.dispatch('addEquipment', formData);
       } catch (error) {
         this.error = error.message || 'Something went wrong!';
         return;
       }
 
-      this.$router.replace('/clients/list');
+      this.$router.replace('/equipments/list');
     },
   },
 };

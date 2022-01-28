@@ -16,7 +16,7 @@ export default {
 
 <style lang="scss" scoped>
 .footer {
-  margin: 0 auto;
+  margin: 50px auto 0;
 
   &__button {
     padding: 5px 30px;

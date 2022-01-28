@@ -1,7 +1,6 @@
 <template>
-  <ErrorPopup v-if="error" :message="error" />
-  <div class="client" v-else>
-    <form class="client__form form" @submit.prevent="submitForm">
+  <div class="employee" v-if="this.employee">
+    <form class="employee__form form" @submit.prevent="submitForm">
       <div class="form__field" :class="{ 'form__field--invalid': !name.isValid }">
         <label class="form__label">
           <span class="form__span">Name</span>
@@ -68,21 +67,28 @@
           <p class="form__error" v-if="!status.isValid">Active must not be empty</p>
         </label>
       </div>
-      <button class="form__button button">Create</button>
+      <button class="form__button button">Edit</button>
     </form>
   </div>
+  <div class="form__not-found" v-else>Employee not fount</div>
 </template>
 
 <script>
-import ErrorPopup from '@/components/ErrorPopup.vue';
-
 export default {
-  components: {
-    ErrorPopup,
+  props: ['id'],
+  created() {
+    this.employee = this.$store.getters.getEmployeeById(this.id);
+    if (this.employee) {
+      this.name.value = this.employee.name;
+      this.address.value = this.employee.address;
+      this.phone.value = this.employee.phone;
+      this.person.value = this.employee.person;
+      this.type.value = this.employee.type;
+      this.status.value = this.employee.status;
+    }
   },
   data() {
     return {
-      error: null,
       name: {
         value: '',
         isValid: true,
@@ -186,7 +192,7 @@ export default {
         this.formIsValid = false;
       }
     },
-    async submitForm() {
+    submitForm() {
       this.validateForm();
 
       if (!this.formIsValid) {
@@ -194,6 +200,7 @@ export default {
       }
 
       const formData = {
+        id: this.id,
         name: this.name.value,
         address: this.address.value,
         phone: this.phone.value,
@@ -202,14 +209,8 @@ export default {
         status: this.status.value,
       };
 
-      try {
-        await this.$store.dispatch('addClient', formData);
-      } catch (error) {
-        this.error = error.message || 'Something went wrong!';
-        return;
-      }
-
-      this.$router.replace('/clients/list');
+      this.$store.dispatch('editEmployee', formData);
+      this.$router.replace('/employees/list');
     },
   },
 };

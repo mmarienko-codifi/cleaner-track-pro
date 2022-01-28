@@ -67,7 +67,7 @@
           <p class="form__error" v-if="!status.isValid">Active must not be empty</p>
         </label>
       </div>
-      <button class="form__button button">Create</button>
+      <button class="form__button button">Edit</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Client not fount</div>
@@ -200,6 +200,7 @@ export default {
       }
 
       const formData = {
+        id: this.id,
         name: this.name.value,
         address: this.address.value,
         phone: this.phone.value,
@@ -208,7 +209,7 @@ export default {
         status: this.status.value,
       };
 
-      this.$store.dispatch('addClient', formData);
+      this.$store.dispatch('editClient', formData);
       this.$router.replace('/clients/list');
     },
   },
