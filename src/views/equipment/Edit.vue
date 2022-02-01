@@ -19,7 +19,7 @@
         <label class="form__label">
           <span class="form__span">Monthly fee ($)</span>
           <input class="form__input" name="usage" type="text" v-model.trim="usage.value" @blur="validateUsage()" />
-          <p class="form__error" v-if="!usage.isValid">Usage fee must not be empty</p>
+          <p class="form__error" v-if="!usage.isValid">Usage fee is not a number or empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
@@ -97,7 +97,7 @@ export default {
       }
     },
     validateUsage() {
-      if (this.usage.value == '') {
+      if (!/^[ 0-9]+$/.test(this.usage.value) || this.usage.value == '') {
         this.usage.isValid = false;
         return false;
       } else {

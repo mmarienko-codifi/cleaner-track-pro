@@ -19,21 +19,21 @@
         <label class="form__label">
           <span class="form__span">Phone</span>
           <input class="form__input" name="phone" type="tel" v-model.trim="phone.value" @blur="validatePhone()" />
-          <p class="form__error" v-if="!phone.isValid">Phone must not be empty</p>
+          <p class="form__error" v-if="!phone.isValid">Phone is not a number or empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !salary.isValid }">
         <label class="form__label">
           <span class="form__span">Monthly salary ($)</span>
           <input class="form__input" name="salary" type="text" v-model.trim="salary.value" @blur="validateSalary()" />
-          <p class="form__error" v-if="!salary.isValid">Salary must not be empty</p>
+          <p class="form__error" v-if="!salary.isValid">Salary is not a number or empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !date.isValid }">
         <label class="form__label">
           <span class="form__span">Date of birth</span>
           <input class="form__input" name="date" type="date" v-model.trim="date.value" @blur="validateDate()" />
-          <p class="form__error" v-if="!date.isValid">Date must not be empty</p>
+          <p class="form__error" v-if="!date.isValid">Date later than today or empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
@@ -121,7 +121,7 @@ export default {
       }
     },
     validatePhone() {
-      if (this.phone.value == '') {
+      if (!/^[+ 0-9]+$/.test(this.phone.value) || this.phone.value == '') {
         this.phone.isValid = false;
         return false;
       } else {
@@ -130,7 +130,7 @@ export default {
       }
     },
     validateSalary() {
-      if (this.salary.value == '') {
+      if (!/^[ 0-9]+$/.test(this.salary.value) || this.salary.value == '') {
         this.salary.isValid = false;
         return false;
       } else {
@@ -138,8 +138,12 @@ export default {
         return true;
       }
     },
-    validateDate() {
-      if (this.date.value == '') {
+     validateDate() {
+      if (Date.parse(this.date.value) > Date.now() && this.date.value) {
+        this.date.isValid = false;
+        return false;
+      } 
+      if (!this.date.value) {
         this.date.isValid = false;
         return false;
       } else {

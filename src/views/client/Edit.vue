@@ -19,7 +19,7 @@
         <label class="form__label">
           <span class="form__span">Contact phone</span>
           <input class="form__input" name="phone" type="tel" v-model.trim="phone.value" @blur="validatePhone()" />
-          <p class="form__error" v-if="!phone.isValid">Phone must not be empty</p>
+          <p class="form__error" v-if="!phone.isValid">Phone is not a number or empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !person.isValid }">
@@ -118,7 +118,7 @@ export default {
       }
     },
     validatePhone() {
-      if (this.phone.value == '') {
+      if (!/^[+ 0-9]+$/.test(this.phone.value) || this.phone.value == '') {
         this.phone.isValid = false;
         return false;
       } else {

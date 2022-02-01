@@ -52,7 +52,7 @@
         <label class="form__label">
           <span class="form__span">Monthly fee ($)</span>
           <input class="form__input" name="service" type="text" v-model.trim="service.value" @blur="validateService()" />
-          <p class="form__error" v-if="!service.isValid">Service fee must not be empty</p>
+          <p class="form__error" v-if="!service.isValid">Service fee is not a number or empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !equipments.isValid }">
@@ -79,14 +79,14 @@
         <label class="form__label">
           <span class="form__span">Start date</span>
           <input class="form__input" name="start_date" type="date" v-model.trim="start_date.value" @blur="validateStartdate()" />
-          <p class="form__error" v-if="!start_date.isValid">Start date must not be empty</p>
+          <p class="form__error" v-if="!start_date.isValid">Start date later than End date or empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !end_date.isValid }">
         <label class="form__label">
           <span class="form__span">End date</span>
           <input class="form__input" name="end_date" type="date" v-model.trim="end_date.value" @blur="validateEnddate()" />
-          <p class="form__error" v-if="!end_date.isValid">End date must not be empty</p>
+          <p class="form__error" v-if="!end_date.isValid">End date earlier than Start date or empty</p>
         </label>
       </div>
       <button class="form__button button">Create</button>
@@ -228,7 +228,7 @@ export default {
       }
     },
     validateService() {
-      if (this.service.value == '') {
+      if (!/^[ 0-9]+$/.test(this.service.value) || this.service.value == '') {
         this.service.isValid = false;
         return false;
       } else {
@@ -237,11 +237,14 @@ export default {
       }
     },
     validateEquipment() {
-      // this.employee.id = id;
       this.equipments.isValid = true;
       return true;
     },
     validateStartdate() {
+      if (Date.parse(this.start_date.value) >= Date.parse(this.end_date.value) && this.end_date.value) {
+        this.start_date.isValid = false;
+        return false;
+      } 
       if (!this.start_date.value) {
         this.start_date.isValid = false;
         return false;
@@ -251,6 +254,10 @@ export default {
       }
     },
     validateEnddate() {
+      if (Date.parse(this.start_date.value) >= Date.parse(this.end_date.value) && this.start_date.value) {
+        this.end_date.isValid = false;
+        return false;
+      }
       if (!this.end_date.value) {
         this.end_date.isValid = false;
         return false;
