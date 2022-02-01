@@ -5,10 +5,8 @@ export default {
       const equipmentData = {
         id: newEquipmentID,
         name: data.name,
-        address: data.address,
-        phone: data.phone,
-        person: data.person,
-        type: data.type,
+        storage: data.storage,
+        usage: data.usage,
         status: data.status,
       };
   
@@ -30,11 +28,10 @@ export default {
       const equipmentData = {
         id: data.id,
         name: data.name,
-        address: data.address,
-        phone: data.phone,
-        person: data.person,
-        type: data.type,
+        storage: data.storage,
+        usage: data.usage,
         status: data.status,
+        link: data.link,
       };
   
       const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments/${data.id}.json`, {
@@ -64,16 +61,33 @@ export default {
         array.push({
           id: responseData[key].id,
           name: responseData[key].name,
-          address: responseData[key].address,
-          phone: responseData[key].phone,
-          person: responseData[key].person,
-          type: responseData[key].type,
+          storage: responseData[key].storage,
+          usage: responseData[key].usage,
           status: responseData[key].status,
+          link: responseData[key].link,
         });
         return array;
       }, []);
   
       context.commit('setEquipments', equipments);
+    },
+        
+    async deleteEquipment(context, data) {
+      const equipmentData = {
+        id: data.id,
+      };
+  
+      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments/${data.id}.json`, {
+        method: 'DELETE',
+      });
+  
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Failed to fetch!');
+      }
+  
+      context.commit('deleteEquipment', equipmentData);
     },
   };
   

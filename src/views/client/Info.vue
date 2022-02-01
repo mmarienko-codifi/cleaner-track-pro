@@ -8,17 +8,17 @@
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Address:</span><span class="list__value">{{ this.client.address }}</span>
+          <span class="list__key">Primary address:</span><span class="list__value">{{ this.client.address }}</span>
         </div>
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Phone:</span><span class="list__value">{{ this.client.phone }}</span>
+          <span class="list__key">Contact phone:</span><span class="list__value">{{ this.client.phone }}</span>
         </div>
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Person:</span><span class="list__value">{{ this.client.person }}</span>
+          <span class="list__key">Contact person:</span><span class="list__value">{{ this.client.person }}</span>
         </div>
       </li>
       <li class="list__item">

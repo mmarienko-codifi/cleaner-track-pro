@@ -6,8 +6,6 @@ export default {
         id: newWorksiteID,
         name: data.name,
         address: data.address,
-        phone: data.phone,
-        person: data.person,
         type: data.type,
         status: data.status,
       };
@@ -31,10 +29,9 @@ export default {
         id: data.id,
         name: data.name,
         address: data.address,
-        phone: data.phone,
-        person: data.person,
         type: data.type,
         status: data.status,
+        link: data.link,
       };
   
       const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/worksites/${data.id}.json`, {
@@ -65,15 +62,32 @@ export default {
           id: responseData[key].id,
           name: responseData[key].name,
           address: responseData[key].address,
-          phone: responseData[key].phone,
-          person: responseData[key].person,
           type: responseData[key].type,
           status: responseData[key].status,
+          link: responseData[key].link,
         });
         return array;
       }, []);
   
       context.commit('setWorksites', worksites);
+    },
+
+    async deleteWorksite(context, data) {
+      const worksiteData = {
+        id: data.id,
+      };
+  
+      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/worksites/${data.id}.json`, {
+        method: 'DELETE',
+      });
+  
+      const responseData = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(responseData.message || 'Failed to fetch!');
+      }
+  
+      context.commit('deleteWorksite', worksiteData);
     },
   };
   

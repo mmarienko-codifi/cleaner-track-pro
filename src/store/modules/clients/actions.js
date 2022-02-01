@@ -75,4 +75,22 @@ export default {
 
     context.commit('setClients', clients);
   },
+
+  async deleteClient(context, data) {
+    const clientData = {
+      id: data.id,
+    };
+
+    const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/clients/${data.id}.json`, {
+      method: 'DELETE',
+    });
+
+    const responseData = await response.json();
+
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Failed to fetch!');
+    }
+
+    context.commit('deleteClient', clientData);
+  },
 };

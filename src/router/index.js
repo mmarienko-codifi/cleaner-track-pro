@@ -102,6 +102,18 @@ const routes = [
     component: () => import('@/views/worksite/Edit.vue'),
   },
   {
+    path: '/reports/invoice',
+    component: () => import('@/views/reports/Invoice.vue'),
+  },
+  {
+    path: '/reports/earnings',
+    component: () => import('@/views/reports/Earnings.vue'),
+  },
+  {
+    path: '/reports/expense',
+    component: () => import('@/views/reports/Expense.vue'),
+  },
+  {
     path: '/:notFound(.*)',
     meta: { layout: 'empty' },
     component: () => import('@/views/404.vue'),

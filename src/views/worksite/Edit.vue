@@ -15,62 +15,37 @@
           <p class="form__error" v-if="!address.isValid">Address must not be empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !phone.isValid }">
-        <label class="form__label">
-          <span class="form__span">Phone</span>
-          <input class="form__input" name="phone" type="text" v-model.trim="phone.value" @blur="validatePhone()" />
-          <p class="form__error" v-if="!phone.isValid">Phone must not be empty</p>
-        </label>
-      </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !person.isValid }">
-        <label class="form__label">
-          <span class="form__span">Person</span>
-          <input class="form__input" name="person" type="text" v-model.trim="person.value" @blur="validatePerson()" />
-          <p class="form__error" v-if="!person.isValid">Person must not be empty</p>
-        </label>
-      </div>
       <div class="form__field" :class="{ 'form__field--invalid': !type.isValid }">
         <label class="form__label">
           <span class="form__span">Type</span>
-          <div class="form__radio">
-            <div class="form__radio-item">
-              <label class="form__radio-label">
-                <input
-                  class="form__radio-input"
-                  name="type"
-                  type="radio"
-                  value="company"
-                  checked
-                  v-model="type.value"
-                  @blur="validateType()"
-                />
-                <span class="form__radio-span">Company</span>
-              </label>
-            </div>
-            <div class="form__radio-item">
-              <label class="form__radio-label">
-                <input class="form__radio-input" name="type" type="radio" value="personal" v-model="type.value" @blur="validateType()" />
-                <span class="form__radio-span">Personal</span>
-              </label>
-            </div>
-          </div>
+          <select class="form__select" v-model="type.value" @blur="validateType()">
+            <option value="Office" selected>Office</option>
+            <option value="Residential building">Residential building</option>
+            <option value="Personal home">Personal home</option>
+            <option value="Individual apartment">Individual apartment</option>
+            <option value="Manufacturing">Manufacturing</option>
+            <option value="Warehouse">Warehouse</option>
+            <option value="Outdoor">Outdoor</option>
+            <option value="Field">Field</option>
+          </select>
           <p class="form__error" v-if="!type.isValid">At least one expertise must be selected</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <label class="form__label">
-          <span class="form__span">Active</span>
-          <div class="form__checkbox">
+        <div class="form__label">
+          <span class="form__span">Status</span>
+          <label class="form__checkbox">
             <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
             <span class="form__checkbox-span"></span>
-          </div>
-          <p class="form__error" v-if="!status.isValid">Active must not be empty</p>
-        </label>
+          </label>
+          <p class="form__error" v-if="!status.isValid">Status must not be empty</p>
+        </div>
       </div>
       <button class="form__button button">Edit</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Worksite not fount</div>
+  <div class="form__not-found form__error" v-if="!link.isValid">The worksite is busy. You can't change the status</div>
 </template>
 
 <script>
@@ -81,10 +56,9 @@ export default {
     if (this.worksite) {
       this.name.value = this.worksite.name;
       this.address.value = this.worksite.address;
-      this.phone.value = this.worksite.phone;
-      this.person.value = this.worksite.person;
       this.type.value = this.worksite.type;
       this.status.value = this.worksite.status;
+      this.link.value = this.worksite.link;
     }
   },
   data() {
@@ -97,20 +71,16 @@ export default {
         value: '',
         isValid: true,
       },
-      phone: {
-        value: '',
-        isValid: true,
-      },
-      person: {
-        value: '',
-        isValid: true,
-      },
       type: {
         value: 'company',
         isValid: true,
       },
       status: {
         value: true,
+        isValid: true,
+      },
+      link: {
+        value: '',
         isValid: true,
       },
       formIsValid: true,
@@ -135,24 +105,6 @@ export default {
         return true;
       }
     },
-    validatePhone() {
-      if (this.phone.value == '') {
-        this.phone.isValid = false;
-        return false;
-      } else {
-        this.phone.isValid = true;
-        return true;
-      }
-    },
-    validatePerson() {
-      if (this.person.value == '') {
-        this.person.isValid = false;
-        return false;
-      } else {
-        this.person.isValid = true;
-        return true;
-      }
-    },
     validateType() {
       if (!this.type.value) {
         this.type.isValid = false;
@@ -171,6 +123,15 @@ export default {
         return true;
       }
     },
+    validateLink() {
+      if (!this.link.value) {
+        this.link.isValid = true;
+        return true;
+      } else {
+        this.link.isValid = false;
+        return false;
+      }
+    },
     validateForm() {
       this.formIsValid = true;
       if (!this.validateName()) {
@@ -179,16 +140,13 @@ export default {
       if (!this.validateAddress()) {
         this.formIsValid = false;
       }
-      if (!this.validatePhone()) {
-        this.formIsValid = false;
-      }
-      if (!this.validatePerson()) {
-        this.formIsValid = false;
-      }
       if (!this.validateType()) {
         this.formIsValid = false;
       }
       if (!this.validateStatus()) {
+        this.formIsValid = false;
+      }
+      if (!this.validateLink()) {
         this.formIsValid = false;
       }
     },
@@ -203,10 +161,9 @@ export default {
         id: this.id,
         name: this.name.value,
         address: this.address.value,
-        phone: this.phone.value,
-        person: this.person.value,
         type: this.type.value,
         status: this.status.value,
+        link: this.status.link,
       };
 
       this.$store.dispatch('editWorksite', formData);

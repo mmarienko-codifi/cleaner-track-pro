@@ -5,14 +5,15 @@
       <Spinner />
     </div>
     <ul class="equipments__list list" v-else-if="hasEquipments">
-      <li class="list__item" :class="equipment.status ? '' : 'list__item--deactivated'" v-for="equipment in getEquipments" :key="equipment.id">
+      <li class="list__item" :class="{'list__item--deactivated': !equipment.status || equipment.link}" v-for="equipment in getEquipments" :key="equipment.id">
         <router-link class="list__link" :to="'/equipments/' + equipment.id + '/read'">
-          <span class="list__title"> {{ equipment.name }} ({{ equipment.person }}) </span>
+          <span class="list__title"> {{ equipment.name }} | {{ equipment.usage }}$ | {{ equipment.storage }} </span>
           <router-link class="list__button button" :to="'/equipments/' + equipment.id + '/read'"> Read </router-link>
           <router-link class="list__button button button--edit" :to="'/equipments/' + equipment.id + '/update'"> Update </router-link>
-          <router-link class="list__button button button--delete" :to="'/equipments/' + equipment.id + '/delete'"> Delete </router-link>
+          <a class="list__button button button--delete" @click.prevent="deleteEquipment(equipment)"> Delete </a>
         </router-link>
-        <span class="list__deactivated" v-if="!equipment.status"> deactivated </span>
+        <span class="list__busy" v-if="equipment.link"> busy </span>
+        <span class="list__deactivated" v-else-if="!equipment.status"> deactivated </span>
       </li>
     </ul>
     <div class="list__not-found" v-else>No equipments found</div>
@@ -52,9 +53,26 @@ export default {
       try {
         await this.$store.dispatch('loadEquipments');
       } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+      this.isLoading = false;
+    },
+    async deleteEquipment(data) {
+      this.isLoading = true;
+
+      const formData = {
+        id: data.id,
+      };
+
+      try {
+        await this.$store.dispatch('deleteEquipment', formData);
+      } catch (error) {
         this.error = error.message || 'Something went wrong!';
       }
       this.isLoading = false;
+      this.$router.replace('/equipments/list');
     },
   },
 };

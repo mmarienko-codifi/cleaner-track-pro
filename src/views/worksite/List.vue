@@ -5,14 +5,15 @@
       <Spinner />
     </div>
     <ul class="worksites__list list" v-else-if="hasWorksites">
-      <li class="list__item" :class="worksite.status ? '' : 'list__item--deactivated'" v-for="worksite in getWorksites" :key="worksite.id">
+      <li class="list__item" :class="{'list__item--deactivated': !worksite.status || worksite.link}" v-for="worksite in getWorksites" :key="worksite.id">
         <router-link class="list__link" :to="'/worksites/' + worksite.id + '/read'">
-          <span class="list__title"> {{ worksite.name }} ({{ worksite.person }}) </span>
+          <span class="list__title"> {{ worksite.name }} ({{ worksite.address }}) </span>
           <router-link class="list__button button" :to="'/worksites/' + worksite.id + '/read'"> Read </router-link>
           <router-link class="list__button button button--edit" :to="'/worksites/' + worksite.id + '/update'"> Update </router-link>
-          <router-link class="list__button button button--delete" :to="'/worksites/' + worksite.id + '/delete'"> Delete </router-link>
+          <a class="list__button button button--delete" @click.prevent="deleteWorksite(worksite)"> Delete </a>
         </router-link>
-        <span class="list__deactivated" v-if="!worksite.status"> deactivated </span>
+        <span class="list__busy" v-if="worksite.link"> busy </span>
+        <span class="list__deactivated" v-else-if="!worksite.status"> deactivated </span>
       </li>
     </ul>
     <div class="list__not-found" v-else>No worksites found</div>
@@ -52,9 +53,26 @@ export default {
       try {
         await this.$store.dispatch('loadWorksites');
       } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+      this.isLoading = false;
+    },
+    async deleteWorksite(data) {
+      this.isLoading = true;
+
+      const formData = {
+        id: data.id,
+      };
+
+      try {
+        await this.$store.dispatch('deleteWorksite', formData);
+      } catch (error) {
         this.error = error.message || 'Something went wrong!';
       }
       this.isLoading = false;
+      this.$router.replace('/worksites/list');
     },
   },
 };

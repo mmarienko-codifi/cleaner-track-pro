@@ -8,22 +8,12 @@
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Address:</span><span class="list__value">{{ this.equipment.address }}</span>
+          <span class="list__key">Storage location:</span><span class="list__value">{{ this.equipment.storage }}</span>
         </div>
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Phone:</span><span class="list__value">{{ this.equipment.phone }}</span>
-        </div>
-      </li>
-      <li class="list__item">
-        <div class="list__link">
-          <span class="list__key">Person:</span><span class="list__value">{{ this.equipment.person }}</span>
-        </div>
-      </li>
-      <li class="list__item">
-        <div class="list__link">
-          <span class="list__key">Type:</span><span class="list__value">{{ this.equipment.type }}</span>
+          <span class="list__key">Usage fee:</span><span class="list__value">{{ this.equipment.usage }}$</span>
         </div>
       </li>
       <li class="list__item">

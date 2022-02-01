@@ -18,12 +18,12 @@
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Person:</span><span class="list__value">{{ this.employee.person }}</span>
+          <span class="list__key">Monthly salary:</span><span class="list__value">{{ this.employee.salary }}$</span>
         </div>
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Type:</span><span class="list__value">{{ this.employee.type }}</span>
+          <span class="list__key">Date of birth:</span><span class="list__value">{{ this.employee.date }}</span>
         </div>
       </li>
       <li class="list__item">

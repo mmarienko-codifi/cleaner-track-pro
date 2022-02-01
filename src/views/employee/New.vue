@@ -19,54 +19,33 @@
       <div class="form__field" :class="{ 'form__field--invalid': !phone.isValid }">
         <label class="form__label">
           <span class="form__span">Phone</span>
-          <input class="form__input" name="phone" type="text" v-model.trim="phone.value" @blur="validatePhone()" />
+          <input class="form__input" name="phone" type="tel" v-model.trim="phone.value" @blur="validatePhone()" />
           <p class="form__error" v-if="!phone.isValid">Phone must not be empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !person.isValid }">
+      <div class="form__field" :class="{ 'form__field--invalid': !salary.isValid }">
         <label class="form__label">
-          <span class="form__span">Person</span>
-          <input class="form__input" name="person" type="text" v-model.trim="person.value" @blur="validatePerson()" />
-          <p class="form__error" v-if="!person.isValid">Person must not be empty</p>
+          <span class="form__span">Monthly salary ($)</span>
+          <input class="form__input" name="salary" type="text" v-model.trim="salary.value" @blur="validateSalary()" />
+          <p class="form__error" v-if="!salary.isValid">Salary must not be empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !type.isValid }">
+      <div class="form__field" :class="{ 'form__field--invalid': !date.isValid }">
         <label class="form__label">
-          <span class="form__span">Type</span>
-          <div class="form__radio">
-            <div class="form__radio-item">
-              <label class="form__radio-label">
-                <input
-                  class="form__radio-input"
-                  name="type"
-                  type="radio"
-                  value="company"
-                  checked
-                  v-model="type.value"
-                  @blur="validateType()"
-                />
-                <span class="form__radio-span">Company</span>
-              </label>
-            </div>
-            <div class="form__radio-item">
-              <label class="form__radio-label">
-                <input class="form__radio-input" name="type" type="radio" value="personal" v-model="type.value" @blur="validateType()" />
-                <span class="form__radio-span">Personal</span>
-              </label>
-            </div>
-          </div>
-          <p class="form__error" v-if="!type.isValid">At least one expertise must be selected</p>
+          <span class="form__span">Date of birth</span>
+          <input class="form__input" name="date" type="date" v-model.trim="date.value" @blur="validateDate()" />
+          <p class="form__error" v-if="!date.isValid">Date must not be empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <label class="form__label">
-          <span class="form__span">Active</span>
-          <div class="form__checkbox">
+        <div class="form__label">
+          <span class="form__span">Status</span>
+          <label class="form__checkbox">
             <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
             <span class="form__checkbox-span"></span>
-          </div>
-          <p class="form__error" v-if="!status.isValid">Active must not be empty</p>
-        </label>
+          </label>
+          <p class="form__error" v-if="!status.isValid">Status must not be empty</p>
+        </div>
       </div>
       <button class="form__button button">Create</button>
     </form>
@@ -95,12 +74,12 @@ export default {
         value: '',
         isValid: true,
       },
-      person: {
+      salary: {
         value: '',
         isValid: true,
       },
-      type: {
-        value: 'company',
+      date: {
+        value: '',
         isValid: true,
       },
       status: {
@@ -138,21 +117,21 @@ export default {
         return true;
       }
     },
-    validatePerson() {
-      if (this.person.value == '') {
-        this.person.isValid = false;
+    validateSalary() {
+      if (this.salary.value == '') {
+        this.salary.isValid = false;
         return false;
       } else {
-        this.person.isValid = true;
+        this.salary.isValid = true;
         return true;
       }
     },
-    validateType() {
-      if (!this.type.value) {
-        this.type.isValid = false;
+    validateDate() {
+      if (!this.date.value) {
+        this.date.isValid = false;
         return false;
       } else {
-        this.type.isValid = true;
+        this.date.isValid = true;
         return true;
       }
     },
@@ -176,10 +155,10 @@ export default {
       if (!this.validatePhone()) {
         this.formIsValid = false;
       }
-      if (!this.validatePerson()) {
+      if (!this.validateSalary()) {
         this.formIsValid = false;
       }
-      if (!this.validateType()) {
+      if (!this.validateDate()) {
         this.formIsValid = false;
       }
       if (!this.validateStatus()) {
@@ -197,8 +176,8 @@ export default {
         name: this.name.value,
         address: this.address.value,
         phone: this.phone.value,
-        person: this.person.value,
-        type: this.type.value,
+        salary: this.salary.value,
+        date: this.date.value,
         status: this.status.value,
       };
 

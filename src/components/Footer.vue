@@ -2,15 +2,20 @@
   <div class="footer">
     <div class="container">
       <div class="footer__inner">
-        <router-link class="footer__button button button--logout" :to="'/logout'"> Logout </router-link>
+        <!-- <router-link class="footer__button button button--logout" :to="'/logout'"> Logout </router-link> -->
+        <Reports />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import Reports from '@/components/Reports.vue';
+
 export default {
-  name: 'Footer',
+  components: {
+    Reports,
+  },
 };
 </script>
 

@@ -90,7 +90,7 @@
 
   &__key {
     @media (min-width: 768px) {
-      width: 30%;
+      width: 40%;
       margin-right: 10px;
     }
   }
@@ -98,7 +98,7 @@
   &__value {
     text-align: center;
     @media (min-width: 768px) {
-      width: 70%;
+      width: 60%;
       text-align: right;
     }
   }
@@ -142,6 +142,35 @@
     width: 100%;
 
     background-color: var(--color-logout);
+    background: linear-gradient(to left, var(--color-logout) 20%, rgba(0, 0, 0, 0) 70%);
+
+    color: var(--color-main);
+    font-size: 0.8rem;
+    line-height: 1;
+    text-align: right;
+
+    @media (min-width: 768px) {
+      right: 0px;
+      top: auto;
+      bottom: 0px;
+
+      border-radius: 0 0 var(--border-radius) var(--border-radius);
+      background: linear-gradient(to right, var(--color-logout) 0%, rgba(0, 0, 0, 0) 50%);
+
+      text-align: left;
+    }
+  }
+
+  &__busy {
+    position: absolute;
+    right: 0px;
+    top: 14px;
+
+    display: inline-block;
+    padding: 2px 15px;
+    width: 100%;
+
+    background-color: var(--color-accent);
     background: linear-gradient(to left, var(--color-logout) 20%, rgba(0, 0, 0, 0) 70%);
 
     color: var(--color-main);
@@ -218,7 +247,7 @@
 
     &--invalid {
       .form__input {
-        border-radius: var(--border-radius) var(--border-radius) 0 0 ;
+        border-radius: var(--border-radius) var(--border-radius) 0 0;
 
         @media (min-width: 768px) {
           border-radius: var(--border-radius) 0 0 var(--border-radius);
@@ -238,7 +267,6 @@
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    justify-content: space-between;
 
     font-weight: bold;
 
@@ -250,11 +278,17 @@
 
   &__span {
     @media (min-width: 768px) {
-      width: 150px;
+      width: 200px;
       padding: 0 15px;
       text-align: center;
       flex-shrink: 0;
     }
+  }
+
+  &__info {
+    width: 100%;
+    color: var(--color-delete);
+    padding: 5px 0;
   }
 
   &__input {
@@ -270,41 +304,54 @@
     }
   }
 
-  &__radio {
+  &__select {
     width: 100%;
-    display: flex;
-
     margin-top: 10px;
+    padding: 12px 15px;
+
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
 
     @media (min-width: 768px) {
       margin-top: 0;
     }
   }
 
-  &__radio-item {
-    margin-right: 20px;
+  &__checkboxes {
+    margin: -3px;
+    margin-top: 5px;
+
+    @media (min-width: 768px) {
+      margin-top: -3px;
+    }
   }
 
-  &__radio-span {
-    cursor: pointer;
+  &__checkboxes-item {
+    width: 100%;
+  }
+
+  &__checkboxes-span {
     display: inline-block;
-    padding: 10px;
+    height: 33px;
+    padding: 5px 13px;
+    margin: 3px;
 
     border-radius: var(--border-radius);
+    border: 3px solid var(--color-rare);
+    color: var(--color-rare);
+
+    cursor: pointer;
+    white-space: nowrap;
 
     transition: all 0.1s ease;
   }
 
-  &__radio-input:checked + .form__radio-span {
+  &__checkboxes-input:checked + .form__checkboxes-span {
     background-color: var(--color-rare);
-
-    color: #fff;
+    color: var(--color-main);
   }
 
   &__checkbox {
-    width: 100%;
-    display: flex;
-
     margin-top: 10px;
 
     @media (min-width: 768px) {
@@ -314,25 +361,44 @@
 
   &__checkbox-span {
     display: inline-block;
-    width: 43px;
+    width: 100px;
     height: 33px;
     padding: 5px 13px;
 
     border-radius: var(--border-radius);
     border: 3px solid var(--color-rare);
 
-    color: #fff;
-
     cursor: pointer;
 
     transition: all 0.1s ease;
+
+    &::before {
+      content: 'Inactive';
+      color: var(--color-rare);
+    }
   }
 
   &__checkbox-input:checked + .form__checkbox-span {
     background-color: var(--color-rare);
 
     &::before {
-      content: '✓';
+      content: 'Active ✔';
+      color: #fff;
+    }
+  }
+
+  &__checkbox--hazardous {
+    .form__checkbox-span {
+      width: 62px;
+      &::before {
+        content: 'No';
+      }
+    }
+
+    .form__checkbox-input:checked + .form__checkbox-span {
+      &::before {
+        content: 'Yes';
+      }
     }
   }
 
@@ -351,7 +417,7 @@
     font-weight: bold;
 
     @media (min-width: 768px) {
-      padding: 10px 15px;
+      padding: 11px 15px;
     }
   }
 

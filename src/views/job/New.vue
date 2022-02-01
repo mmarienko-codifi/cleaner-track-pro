@@ -1,71 +1,92 @@
 <template>
   <ErrorPopup v-if="error" :message="error" />
   <div class="job" v-else>
-    <form class="job__form form" @submit.prevent="submitForm">
-      <div class="form__field" :class="{ 'form__field--invalid': !name.isValid }">
+    <div v-if="isLoading">
+      <Spinner />
+    </div>
+    <form class="job__form form" @submit.prevent="submitForm" v-else-if="hasEquipments && hasWorksites && hasEmployees">
+      <div class="form__field" :class="{ 'form__field--invalid': !worksite.isValid }">
         <label class="form__label">
-          <span class="form__span">Name</span>
-          <input class="form__input" name="name" type="text" v-model.trim="name.value" @blur="validateName()" />
-          <p class="form__error" v-if="!name.isValid">Name must not be empty</p>
-        </label>
-      </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !address.isValid }">
-        <label class="form__label">
-          <span class="form__span">Address</span>
-          <input class="form__input" name="address" type="text" v-model.trim="address.value" @blur="validateAddress()" />
-          <p class="form__error" v-if="!address.isValid">Address must not be empty</p>
-        </label>
-      </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !phone.isValid }">
-        <label class="form__label">
-          <span class="form__span">Phone</span>
-          <input class="form__input" name="phone" type="text" v-model.trim="phone.value" @blur="validatePhone()" />
-          <p class="form__error" v-if="!phone.isValid">Phone must not be empty</p>
-        </label>
-      </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !person.isValid }">
-        <label class="form__label">
-          <span class="form__span">Person</span>
-          <input class="form__input" name="person" type="text" v-model.trim="person.value" @blur="validatePerson()" />
-          <p class="form__error" v-if="!person.isValid">Person must not be empty</p>
+          <span class="form__span">Worksite</span>
+          <select class="form__select" v-model="worksite.value" v-if="getWorksites.length != 0" @blur="validateWorksite()">
+            <option :value="worksite.name" v-for="worksite in getWorksites" :key="worksite.id">{{ worksite.name }}</option>
+          </select>
+          <span class="form__info" v-else>Active worksites aren't found</span>
+          <p class="form__error" v-if="!worksite.isValid">Worksite must not be empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !type.isValid }">
         <label class="form__label">
           <span class="form__span">Type</span>
-          <div class="form__radio">
-            <div class="form__radio-item">
-              <label class="form__radio-label">
-                <input
-                  class="form__radio-input"
-                  name="type"
-                  type="radio"
-                  value="company"
-                  checked
-                  v-model="type.value"
-                  @blur="validateType()"
-                />
-                <span class="form__radio-span">Company</span>
-              </label>
-            </div>
-            <div class="form__radio-item">
-              <label class="form__radio-label">
-                <input class="form__radio-input" name="type" type="radio" value="personal" v-model="type.value" @blur="validateType()" />
-                <span class="form__radio-span">Personal</span>
-              </label>
-            </div>
-          </div>
-          <p class="form__error" v-if="!type.isValid">At least one expertise must be selected</p>
+          <select class="form__select" v-model="type.value" @blur="validateType()">
+            <option value="Office cleaning">Office cleaning</option>
+            <option value="Home cleaning">Home cleaning</option>
+            <option value="Deep cleaning">Deep cleaning</option>
+            <option value="Industrial area cleaning">Industrial area cleaning</option>
+            <option value="Outdoor cleaning">Outdoor cleaning</option>
+          </select>
+          <p class="form__error" v-if="!type.isValid">Type must not be empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <label class="form__label">
-          <span class="form__span">Active</span>
-          <div class="form__checkbox">
-            <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
+      <div class="form__field" :class="{ 'form__field--invalid': !hazardous.isValid }">
+        <div class="form__label">
+          <span class="form__span">Hazardous materials</span>
+          <label class="form__checkbox form__checkbox--hazardous">
+            <input class="form__checkbox-input" name="hazardous" type="checkbox" v-model="hazardous.value" @blur="validateHazardous()" />
             <span class="form__checkbox-span"></span>
+          </label>
+          <p class="form__error" v-if="!hazardous.isValid">Hazardous materials must not be empty</p>
+        </div>
+      </div>
+      <div class="form__field" :class="{ 'form__field--invalid': !employee.isValid }">
+        <label class="form__label">
+          <span class="form__span">Employee</span>
+          <select class="form__select" v-model="employee.value" v-if="getEmployees.length != 0" @blur="validateEmployee()">
+            <option :value="employee.name" v-for="employee in getEmployees" :key="employee.id">{{ employee.name }}</option>
+          </select>
+          <span class="form__info" v-else>Active employees aren't found</span>
+          <p class="form__error" v-if="!employee.isValid">Employee must not be empty</p>
+        </label>
+      </div>
+      <div class="form__field" :class="{ 'form__field--invalid': !service.isValid }">
+        <label class="form__label">
+          <span class="form__span">Monthly fee ($)</span>
+          <input class="form__input" name="service" type="text" v-model.trim="service.value" @blur="validateService()" />
+          <p class="form__error" v-if="!service.isValid">Service fee must not be empty</p>
+        </label>
+      </div>
+      <div class="form__field" :class="{ 'form__field--invalid': !equipments.isValid }">
+        <div class="form__label">
+          <span class="form__span">Additional equipment</span>
+          <div class="form__checkboxes" v-if="getEquipments.length != 0">
+            <label class="form__checkboxes-item" v-for="equipment in getEquipments" :key="equipment.id">
+              <input
+                class="form__checkboxes-input"
+                type="checkbox"
+                name="equipments[]"
+                :value="equipment.name"
+                v-model="equipments.value"
+                @blur="validateEquipment()"
+              />
+              <span class="form__checkboxes-span">{{ equipment.name }}</span>
+            </label>
           </div>
-          <p class="form__error" v-if="!status.isValid">Active must not be empty</p>
+          <span class="form__info" v-else>Active equipments aren't found</span>
+          <p class="form__error" v-if="!equipments.isValid">Equipment must not be empty</p>
+        </div>
+      </div>
+      <div class="form__field" :class="{ 'form__field--invalid': !start_date.isValid }">
+        <label class="form__label">
+          <span class="form__span">Start date</span>
+          <input class="form__input" name="start_date" type="date" v-model.trim="start_date.value" @blur="validateStartdate()" />
+          <p class="form__error" v-if="!start_date.isValid">Start date must not be empty</p>
+        </label>
+      </div>
+      <div class="form__field" :class="{ 'form__field--invalid': !end_date.isValid }">
+        <label class="form__label">
+          <span class="form__span">End date</span>
+          <input class="form__input" name="end_date" type="date" v-model.trim="end_date.value" @blur="validateEnddate()" />
+          <p class="form__error" v-if="!end_date.isValid">End date must not be empty</p>
         </label>
       </div>
       <button class="form__button button">Create</button>
@@ -74,81 +95,113 @@
 </template>
 
 <script>
+import Spinner from '@/components/Spinner.vue';
 import ErrorPopup from '@/components/ErrorPopup.vue';
 
 export default {
   components: {
+    Spinner,
     ErrorPopup,
   },
   data() {
     return {
+      isLoading: false,
       error: null,
-      name: {
-        value: '',
-        isValid: true,
-      },
-      address: {
-        value: '',
-        isValid: true,
-      },
-      phone: {
-        value: '',
-        isValid: true,
-      },
-      person: {
+      worksite: {
         value: '',
         isValid: true,
       },
       type: {
-        value: 'company',
+        value: '',
         isValid: true,
       },
-      status: {
-        value: true,
+      hazardous: {
+        value: false,
+        isValid: true,
+      },
+      employee: {
+        value: '',
+        isValid: true,
+      },
+      service: {
+        value: '',
+        isValid: true,
+      },
+      equipments: {
+        value: [],
+        isValid: true,
+      },
+      start_date: {
+        value: '',
+        isValid: true,
+      },
+      end_date: {
+        value: '',
         isValid: true,
       },
       formIsValid: true,
     };
   },
+  async created() {
+    this.isLoading = true;
+    await this.loadWorksites();
+    await this.loadEmployees();
+    await this.loadEquipments();
+    this.isLoading = false;
+  },
+  computed: {
+    getWorksites() {
+      return this.$store.getters.worksites.filter((worksite) => worksite.status && !worksite.link);
+    },
+    getEmployees() {
+      return this.$store.getters.employees.filter((employee) => employee.status && !employee.link);
+    },
+    getEquipments() {
+      return this.$store.getters.equipments.filter((equipment) => equipment.status && !equipment.link);
+    },
+    hasWorksites() {
+      return !this.isLoading && this.$store.getters.hasWorksites;
+    },
+    hasEmployees() {
+      return !this.isLoading && this.$store.getters.hasEmployees;
+    },
+    hasEquipments() {
+      return !this.isLoading && this.$store.getters.hasEquipments;
+    },
+  },
   methods: {
-    validateName() {
-      if (this.name.value == '') {
-        this.name.isValid = false;
-        return false;
-      } else {
-        this.name.isValid = true;
-        return true;
+    async loadWorksites() {
+      try {
+        await this.$store.dispatch('loadWorksites');
+      } catch (error) {
+        this.error = error.message || 'Something went wrong!';
       }
     },
-    validateAddress() {
-      if (this.address.value == '') {
-        this.address.isValid = false;
-        return false;
-      } else {
-        this.address.isValid = true;
-        return true;
+    async loadEmployees() {
+      try {
+        await this.$store.dispatch('loadEmployees');
+      } catch (error) {
+        this.error = error.message || 'Something went wrong!';
       }
     },
-    validatePhone() {
-      if (this.phone.value == '') {
-        this.phone.isValid = false;
-        return false;
-      } else {
-        this.phone.isValid = true;
-        return true;
+    async loadEquipments() {
+      try {
+        await this.$store.dispatch('loadEquipments');
+      } catch (error) {
+        this.error = error.message || 'Something went wrong!';
       }
     },
-    validatePerson() {
-      if (this.person.value == '') {
-        this.person.isValid = false;
+    validateWorksite() {
+      if (this.worksite.value == '') {
+        this.worksite.isValid = false;
         return false;
       } else {
-        this.person.isValid = true;
+        this.worksite.isValid = true;
         return true;
       }
     },
     validateType() {
-      if (!this.type.value) {
+      if (this.type.value == '') {
         this.type.isValid = false;
         return false;
       } else {
@@ -156,33 +209,80 @@ export default {
         return true;
       }
     },
-    validateStatus() {
-      if (this.status.value == undefined) {
-        this.status.isValid = false;
+    validateHazardous() {
+      if (this.hazardous.value == undefined) {
+        this.hazardous.isValid = false;
         return false;
       } else {
-        this.status.isValid = true;
+        this.hazardous.isValid = true;
+        return true;
+      }
+    },
+    validateEmployee() {
+      if (this.employee.value == '') {
+        this.employee.isValid = false;
+        return false;
+      } else {
+        this.employee.isValid = true;
+        return true;
+      }
+    },
+    validateService() {
+      if (this.service.value == '') {
+        this.service.isValid = false;
+        return false;
+      } else {
+        this.service.isValid = true;
+        return true;
+      }
+    },
+    validateEquipment() {
+      // this.employee.id = id;
+      this.equipments.isValid = true;
+      return true;
+    },
+    validateStartdate() {
+      if (!this.start_date.value) {
+        this.start_date.isValid = false;
+        return false;
+      } else {
+        this.start_date.isValid = true;
+        return true;
+      }
+    },
+    validateEnddate() {
+      if (!this.end_date.value) {
+        this.end_date.isValid = false;
+        return false;
+      } else {
+        this.end_date.isValid = true;
         return true;
       }
     },
     validateForm() {
       this.formIsValid = true;
-      if (!this.validateName()) {
-        this.formIsValid = false;
-      }
-      if (!this.validateAddress()) {
-        this.formIsValid = false;
-      }
-      if (!this.validatePhone()) {
-        this.formIsValid = false;
-      }
-      if (!this.validatePerson()) {
+      if (!this.validateWorksite()) {
         this.formIsValid = false;
       }
       if (!this.validateType()) {
         this.formIsValid = false;
       }
-      if (!this.validateStatus()) {
+      if (!this.validateHazardous()) {
+        this.formIsValid = false;
+      }
+      if (!this.validateEmployee()) {
+        this.formIsValid = false;
+      }
+      if (!this.validateService()) {
+        this.formIsValid = false;
+      }
+      if (!this.validateEquipment()) {
+        this.formIsValid = false;
+      }
+      if (!this.validateStartdate()) {
+        this.formIsValid = false;
+      }
+      if (!this.validateEnddate()) {
         this.formIsValid = false;
       }
     },
@@ -193,19 +293,28 @@ export default {
         return;
       }
 
+      const selectedWorksite = this.$store.getters.worksites.find((worksite) => worksite.name == this.worksite.value);
+      const selectedEmployee = this.$store.getters.employees.find((employee) => employee.name == this.employee.value);
+      const selectedEquipment = this.$store.getters.equipments.filter((equipment) => equipment.name == this.equipments.value[0] || equipment.name == this.equipments.value[1] || equipment.name == this.equipments.value[2] || equipment.name == this.equipments.value[3] || equipment.name == this.equipments.value[4]);
+
       const formData = {
-        name: this.name.value,
-        address: this.address.value,
-        phone: this.phone.value,
-        person: this.person.value,
+        worksite: this.worksite.value,
         type: this.type.value,
-        status: this.status.value,
+        hazardous: this.hazardous.value,
+        employee: this.employee.value,
+        service: this.service.value,
+        equipment: this.equipments.value,
+        start_date: this.start_date.value,
+        end_date: this.end_date.value,
       };
 
       try {
-        await this.$store.dispatch('addJob', formData);
+        await this.$store.dispatch('addJob', [formData, selectedWorksite, selectedEmployee, selectedEquipment]);
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
+        if (error.message != "Cannot read properties of undefined (reading 'push')") {
+          this.error = error.message || 'Something went wrong!';
+        }
+        this.$router.replace('/jobs/list');
         return;
       }
 

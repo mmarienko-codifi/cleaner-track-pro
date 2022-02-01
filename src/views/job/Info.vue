@@ -3,22 +3,7 @@
     <ul class="job__list list">
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Name:</span><span class="list__value">{{ this.job.name }}</span>
-        </div>
-      </li>
-      <li class="list__item">
-        <div class="list__link">
-          <span class="list__key">Address:</span><span class="list__value">{{ this.job.address }}</span>
-        </div>
-      </li>
-      <li class="list__item">
-        <div class="list__link">
-          <span class="list__key">Phone:</span><span class="list__value">{{ this.job.phone }}</span>
-        </div>
-      </li>
-      <li class="list__item">
-        <div class="list__link">
-          <span class="list__key">Person:</span><span class="list__value">{{ this.job.person }}</span>
+          <span class="list__key">Worksite:</span><span class="list__value">{{ this.job.worksite }}</span>
         </div>
       </li>
       <li class="list__item">
@@ -28,7 +13,32 @@
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Status:</span><span class="list__value">{{ this.job.status ? 'active' : 'inactive' }}</span>
+          <span class="list__key">Hazardous materials:</span><span class="list__value">{{ this.job.hazardous ? 'YES' : 'NO' }}</span>
+        </div>
+      </li>
+      <li class="list__item">
+        <div class="list__link">
+          <span class="list__key">Employee:</span><span class="list__value">{{ this.job.employee }}</span>
+        </div>
+      </li>
+      <li class="list__item">
+        <div class="list__link">
+          <span class="list__key">Service fee:</span><span class="list__value">{{ this.job.service }}$</span>
+        </div>
+      </li>
+      <li class="list__item">
+        <div class="list__link">
+          <span class="list__key">Additional equipment:</span><span class="list__value">{{ this.job.equipment.join(', ') }}</span>
+        </div>
+      </li>
+      <li class="list__item">
+        <div class="list__link">
+          <span class="list__key">Start date:</span><span class="list__value">{{ this.job.start_date }}</span>
+        </div>
+      </li>
+      <li class="list__item">
+        <div class="list__link">
+          <span class="list__key">End date:</span><span class="list__value">{{ this.job.end_date }}</span>
         </div>
       </li>
     </ul>

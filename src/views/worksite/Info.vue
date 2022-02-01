@@ -13,16 +13,6 @@
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Phone:</span><span class="list__value">{{ this.worksite.phone }}</span>
-        </div>
-      </li>
-      <li class="list__item">
-        <div class="list__link">
-          <span class="list__key">Person:</span><span class="list__value">{{ this.worksite.person }}</span>
-        </div>
-      </li>
-      <li class="list__item">
-        <div class="list__link">
           <span class="list__key">Type:</span><span class="list__value">{{ this.worksite.type }}</span>
         </div>
       </li>

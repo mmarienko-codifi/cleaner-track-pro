@@ -9,4 +9,8 @@ export default {
   setClients(state, payload) {
     state.clients = payload;
   },
+  deleteClient(state, payload) {
+    const index = state.clients.findIndex((client) => client.id === payload.id);
+    state.clients.splice(index, 1);
+  },
 };

@@ -8,69 +8,35 @@
           <p class="form__error" v-if="!name.isValid">Name must not be empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !address.isValid }">
+      <div class="form__field" :class="{ 'form__field--invalid': !storage.isValid }">
         <label class="form__label">
-          <span class="form__span">Address</span>
-          <input class="form__input" name="address" type="text" v-model.trim="address.value" @blur="validateAddress()" />
-          <p class="form__error" v-if="!address.isValid">Address must not be empty</p>
+          <span class="form__span">Storage location</span>
+          <input class="form__input" name="storage" type="text" v-model.trim="storage.value" @blur="validateStorage()" />
+          <p class="form__error" v-if="!storage.isValid">Location must not be empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !phone.isValid }">
+      <div class="form__field" :class="{ 'form__field--invalid': !usage.isValid }">
         <label class="form__label">
-          <span class="form__span">Phone</span>
-          <input class="form__input" name="phone" type="text" v-model.trim="phone.value" @blur="validatePhone()" />
-          <p class="form__error" v-if="!phone.isValid">Phone must not be empty</p>
-        </label>
-      </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !person.isValid }">
-        <label class="form__label">
-          <span class="form__span">Person</span>
-          <input class="form__input" name="person" type="text" v-model.trim="person.value" @blur="validatePerson()" />
-          <p class="form__error" v-if="!person.isValid">Person must not be empty</p>
-        </label>
-      </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !type.isValid }">
-        <label class="form__label">
-          <span class="form__span">Type</span>
-          <div class="form__radio">
-            <div class="form__radio-item">
-              <label class="form__radio-label">
-                <input
-                  class="form__radio-input"
-                  name="type"
-                  type="radio"
-                  value="company"
-                  checked
-                  v-model="type.value"
-                  @blur="validateType()"
-                />
-                <span class="form__radio-span">Company</span>
-              </label>
-            </div>
-            <div class="form__radio-item">
-              <label class="form__radio-label">
-                <input class="form__radio-input" name="type" type="radio" value="personal" v-model="type.value" @blur="validateType()" />
-                <span class="form__radio-span">Personal</span>
-              </label>
-            </div>
-          </div>
-          <p class="form__error" v-if="!type.isValid">At least one expertise must be selected</p>
+          <span class="form__span">Monthly fee ($)</span>
+          <input class="form__input" name="usage" type="text" v-model.trim="usage.value" @blur="validateUsage()" />
+          <p class="form__error" v-if="!usage.isValid">Usage fee must not be empty</p>
         </label>
       </div>
       <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <label class="form__label">
-          <span class="form__span">Active</span>
-          <div class="form__checkbox">
+        <div class="form__label">
+          <span class="form__span">Status</span>
+          <label class="form__checkbox">
             <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
             <span class="form__checkbox-span"></span>
-          </div>
-          <p class="form__error" v-if="!status.isValid">Active must not be empty</p>
-        </label>
+          </label>
+          <p class="form__error" v-if="!status.isValid">Status must not be empty</p>
+        </div>
       </div>
       <button class="form__button button">Edit</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Equipment not fount</div>
+  <div class="form__not-found form__error" v-if="!link.isValid">The equipment is busy. You can't change the status</div>
 </template>
 
 <script>
@@ -80,11 +46,10 @@ export default {
     this.equipment = this.$store.getters.getEquipmentById(this.id);
     if (this.equipment) {
       this.name.value = this.equipment.name;
-      this.address.value = this.equipment.address;
-      this.phone.value = this.equipment.phone;
-      this.person.value = this.equipment.person;
-      this.type.value = this.equipment.type;
+      this.storage.value = this.equipment.storage;
+      this.usage.value = this.equipment.usage;
       this.status.value = this.equipment.status;
+      this.link.value = this.equipment.link;
     }
   },
   data() {
@@ -93,24 +58,20 @@ export default {
         value: '',
         isValid: true,
       },
-      address: {
+      storage: {
         value: '',
         isValid: true,
       },
-      phone: {
+      usage: {
         value: '',
-        isValid: true,
-      },
-      person: {
-        value: '',
-        isValid: true,
-      },
-      type: {
-        value: 'company',
         isValid: true,
       },
       status: {
         value: true,
+        isValid: true,
+      },
+      link: {
+        value: '',
         isValid: true,
       },
       formIsValid: true,
@@ -126,39 +87,21 @@ export default {
         return true;
       }
     },
-    validateAddress() {
-      if (this.address.value == '') {
-        this.address.isValid = false;
+    validateStorage() {
+      if (this.storage.value == '') {
+        this.storage.isValid = false;
         return false;
       } else {
-        this.address.isValid = true;
+        this.storage.isValid = true;
         return true;
       }
     },
-    validatePhone() {
-      if (this.phone.value == '') {
-        this.phone.isValid = false;
+    validateUsage() {
+      if (this.usage.value == '') {
+        this.usage.isValid = false;
         return false;
       } else {
-        this.phone.isValid = true;
-        return true;
-      }
-    },
-    validatePerson() {
-      if (this.person.value == '') {
-        this.person.isValid = false;
-        return false;
-      } else {
-        this.person.isValid = true;
-        return true;
-      }
-    },
-    validateType() {
-      if (!this.type.value) {
-        this.type.isValid = false;
-        return false;
-      } else {
-        this.type.isValid = true;
+        this.usage.isValid = true;
         return true;
       }
     },
@@ -171,24 +114,30 @@ export default {
         return true;
       }
     },
+    validateLink() {
+      if (!this.link.value) {
+        this.link.isValid = true;
+        return true;
+      } else {
+        this.link.isValid = false;
+        return false;
+      }
+    },
     validateForm() {
       this.formIsValid = true;
       if (!this.validateName()) {
         this.formIsValid = false;
       }
-      if (!this.validateAddress()) {
+      if (!this.validateStorage()) {
         this.formIsValid = false;
       }
-      if (!this.validatePhone()) {
-        this.formIsValid = false;
-      }
-      if (!this.validatePerson()) {
-        this.formIsValid = false;
-      }
-      if (!this.validateType()) {
+      if (!this.validateUsage()) {
         this.formIsValid = false;
       }
       if (!this.validateStatus()) {
+        this.formIsValid = false;
+      }
+      if (!this.validateLink()) {
         this.formIsValid = false;
       }
     },
@@ -202,11 +151,10 @@ export default {
       const formData = {
         id: this.id,
         name: this.name.value,
-        address: this.address.value,
-        phone: this.phone.value,
-        person: this.person.value,
-        type: this.type.value,
+        storage: this.storage.value,
+        usage: this.usage.value,
         status: this.status.value,
+        link: this.status.link,
       };
 
       this.$store.dispatch('editEquipment', formData);
