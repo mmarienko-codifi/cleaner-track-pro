@@ -66,7 +66,7 @@
             <td v-else>{{ row.equipment }}</td>
             <td>{{ row.employee_cost.salary }}$</td>
             <td>{{ row.equipment_cost }}$</td>
-            <td>{{ row.service }}$</td>
+            <td>{{ +row.equipment_cost + +row.employee_cost.salary }}$</td>
           </tr>
         </tbody>
         <tfoot>
@@ -283,7 +283,7 @@ export default {
 
       this.report.value = this.$store.getters.jobs.filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date));
 
-      this.total.value = 0;
+      
 
       this.report.value.map((row) => (this.total.value += +row.service));
 
@@ -294,6 +294,8 @@ export default {
       this.total2.value = 0;
 
       this.report.value.map((row) => (this.total2.value += +row.equipment_cost));
+
+      this.total.value = +this.total1.value + +this.total2.value;
     },
   },
 };
