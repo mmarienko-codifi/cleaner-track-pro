@@ -53,12 +53,13 @@
     </form>
   </div>
   <div class="form__not-found" v-else>Client not fount</div>
+   <div class="form__not-found form__error" v-if="!busy.isValid">The client is busy. You cannot change the status</div>
 </template>
 
 <script>
 export default {
   props: ['id'],
-  created() {
+  async created() {
     this.client = this.$store.getters.getClientById(this.id);
     if (this.client) {
       this.name.value = this.client.name;
@@ -68,6 +69,7 @@ export default {
       this.type.value = this.client.type;
       this.status.value = this.client.status;
     }
+    await this.loadWorksites();
   },
   data() {
     return {
@@ -95,10 +97,27 @@ export default {
         value: true,
         isValid: true,
       },
+      busy: {
+        isValid: true,
+      },
       formIsValid: true,
     };
   },
   methods: {
+    getActiveWorksites() {
+      return this.$store.getters.worksites.filter((worksite) => worksite.client == this.name.value && worksite.link);
+    },
+    async loadWorksites() {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch('loadWorksites');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+      this.isLoading = false;
+    },
     validateName() {
       if (this.name.value == '') {
         this.name.isValid = false;
@@ -179,6 +198,13 @@ export default {
 
       if (!this.formIsValid) {
         return;
+      }
+
+      if (this.getActiveWorksites().length > 0) {
+        this.busy.isValid = false;
+        return;
+      } else {
+        this.busy.isValid = true;
       }
 
       const formData = {

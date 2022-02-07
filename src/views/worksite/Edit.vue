@@ -114,7 +114,7 @@ export default {
   },
   computed: {
     getClients() {
-      return this.$store.getters.clients;
+      return this.$store.getters.clients.filter(client => client.status);
     },
     hasClients() {
       return !this.isLoading && this.$store.getters.hasClients;

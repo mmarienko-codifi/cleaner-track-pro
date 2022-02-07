@@ -1,107 +1,300 @@
 <template>
-  <table>
-    <thead>
-      <tr>
-        <th>Worksite name</th>
-        <th>Employee name</th>
-        <th>Equipment used</th>
-        <th>Employee job cost</th>
-        <th>Equipment cost</th>
-        <th>Total cost</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Alfreds Futterkiste</td>
-        <td>Maria Anders</td>
-        <td>Alfreds Futterkiste</td>
-        <td>111$</td>
-        <td>122$</td>
-        <td>100$</td>
-      </tr>
-      <tr>
-        <td>Centro comercial Moctezuma</td>
-        <td>Francisco Chang</td>
-        <td>Centro comercial Moctezuma</td>
-        <td>111$</td>
-        <td>122$</td>
-        <td>100$</td>
-      </tr>
-      <tr>
-        <td>Alfreds Futterkiste</td>
-        <td>Maria Anders</td>
-        <td>Alfreds Futterkiste</td>
-        <td>111$</td>
-        <td>122$</td>
-        <td>100$</td>
-      </tr>
-      <tr>
-        <td>Centro comercial Moctezuma</td>
-        <td>Francisco Chang</td>
-        <td>Centro comercial Moctezuma</td>
-        <td>111$</td>
-        <td>122$</td>
-        <td>100$</td>
-      </tr>
-      <tr>
-        <td>Alfreds Futterkiste</td>
-        <td>Maria Anders</td>
-        <td>Alfreds Futterkiste</td>
-        <td>111$</td>
-        <td>122$</td>
-        <td>100$</td>
-      </tr>
-      <tr>
-        <td>Centro comercial Moctezuma</td>
-        <td>Francisco Chang</td>
-        <td>Centro comercial Moctezuma</td>
-        <td>111$</td>
-        <td>122$</td>
-        <td>100$</td>
-      </tr>
-      <tr>
-        <td>Alfreds Futterkiste</td>
-        <td>Maria Anders</td>
-        <td>Alfreds Futterkiste</td>
-        <td>111$</td>
-        <td>122$</td>
-        <td>100$</td>
-      </tr>
-      <tr>
-        <td>Centro comercial Moctezuma</td>
-        <td>Francisco Chang</td>
-        <td>Centro comercial Moctezuma</td>
-        <td>111$</td>
-        <td>122$</td>
-        <td>100$</td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr>
-        <td colspan="3"><b>Total</b></td>
-        <td>1000$</td>
-        <td>1000$</td>
-        <td>1000$</td>
-      </tr>
-    </tfoot>
-  </table>
+  <ErrorPopup v-if="error" :message="error" />
+  <div class="reports" v-else>
+    <div v-if="isLoading">
+      <Spinner />
+    </div>
+    <form class="reports form" @submit.prevent="submitForm" v-else-if="hasJobs">
+      <div class="form__field" :class="{ 'form__field--invalid': !month.isValid }">
+        <label class="form__label">
+          <span class="form__span">Month</span>
+          <select class="form__select" v-model="month.value" @blur="validateMonth()">
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+          <p class="form__error" v-if="!month.isValid">Month must not be empty</p>
+        </label>
+      </div>
+      <div class="form__field" :class="{ 'form__field--invalid': !year.isValid }">
+        <label class="form__label">
+          <span class="form__span">Year</span>
+          <select class="form__select" v-model="year.value" @blur="validateYear()">
+            <option :value="new Date().getFullYear()">{{ new Date().getFullYear() }}</option>
+            <option :value="new Date().getFullYear() - 1">{{ new Date().getFullYear() - 1 }}</option>
+            <option :value="new Date().getFullYear() - 2">{{ new Date().getFullYear() - 2 }}</option>
+            <option :value="new Date().getFullYear() - 3">{{ new Date().getFullYear() - 3 }}</option>
+            <option :value="new Date().getFullYear() - 4">{{ new Date().getFullYear() - 4 }}</option>
+            <option :value="new Date().getFullYear() - 5">{{ new Date().getFullYear() - 5 }}</option>
+            <option :value="new Date().getFullYear() - 6">{{ new Date().getFullYear() - 6 }}</option>
+            <option :value="new Date().getFullYear() - 7">{{ new Date().getFullYear() - 7 }}</option>
+            <option :value="new Date().getFullYear() - 8">{{ new Date().getFullYear() - 8 }}</option>
+            <option :value="new Date().getFullYear() - 9">{{ new Date().getFullYear() - 9 }}</option>
+          </select>
+          <p class="form__error" v-if="!year.isValid">Year must not be empty</p>
+        </label>
+      </div>
+      <button class="form__button button">Create report</button>
+    </form>
+    <div class="list__not-found" v-else>No jobs found</div>
+    <div class="table" v-if="report.value">
+      <table>
+        <thead>
+          <tr>
+            <th>Worksite name</th>
+            <th>Employee name</th>
+            <th>Equipment used</th>
+            <th>Employee job cost</th>
+            <th>Equipment cost</th>
+            <th>Total cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in report.value" :key="row.id">
+            <td>{{ row.worksite }}</td>
+            <td>{{ row.employee }}</td>
+            <td v-if="Array.isArray(row.equipment)">{{ row.equipment.join(', ') }}</td>
+            <td v-else>{{ row.equipment }}</td>
+            <td>{{ row.employee_cost.salary }}$</td>
+            <td>{{ row.equipment_cost }}$</td>
+            <td>{{ row.service }}$</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3"><b>Total</b></td>
+            <td>{{ total1.value }}$</td>
+            <td>{{ total2.value }}$</td>
+            <td>{{ total.value }}$</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
 </template>
 
-<style lang="scss" scoped>
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th {
-  background-color: var(--color-deactivated);
-}
-td {
-  background-color: var(--color-form);
-}
-table,
-th,
-td {
-  border: 1px solid black;
-  padding: 5px;
-}
-</style>
+<script>
+import Spinner from '@/components/Spinner.vue';
+import ErrorPopup from '@/components/ErrorPopup.vue';
+
+export default {
+  components: {
+    Spinner,
+    ErrorPopup,
+  },
+  data() {
+    return {
+      isLoading: false,
+      error: null,
+      month: {
+        value: '',
+        isValid: true,
+      },
+      year: {
+        value: '',
+        isValid: true,
+      },
+      report: {
+        value: '',
+      },
+      total: {
+        value: 0,
+      },
+      total1: {
+        value: 0,
+      },
+      total2: {
+        value: 0,
+      },
+      formIsValid: true,
+    };
+  },
+  async created() {
+    this.isLoading = true;
+    await this.loadJobs();
+    await this.loadEquipments();
+    await this.loadEmployees();
+    this.isLoading = false;
+  },
+  computed: {
+    getJobs() {
+      return this.$store.getters.jobs;
+    },
+    hasJobs() {
+      return !this.isLoading && this.$store.getters.hasJobs;
+    },
+    getEmployees() {
+      return this.$store.getters.employees;
+    },
+    hasEmployees() {
+      return !this.isLoading && this.$store.getters.hasEmployees;
+    },
+    getEquipments() {
+      return this.$store.getters.equipments;
+    },
+    hasEquipments() {
+      return !this.isLoading && this.$store.getters.hasEquipments;
+    },
+  },
+  methods: {
+    async loadJobs() {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch('loadJobs');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+      this.isLoading = false;
+    },
+    async loadEquipments() {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch('loadEquipments');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+      this.isLoading = false;
+    },
+    async loadEmployees() {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch('loadEmployees');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+      this.isLoading = false;
+    },
+    validateMonth() {
+      if (!this.month.value) {
+        this.month.isValid = false;
+        return false;
+      } else {
+        this.month.isValid = true;
+        return true;
+      }
+    },
+    validateYear() {
+      if (!this.year.value) {
+        this.year.isValid = false;
+        return false;
+      } else {
+        this.year.isValid = true;
+        return true;
+      }
+    },
+    validateForm() {
+      this.formIsValid = true;
+      if (!this.validateMonth()) {
+        this.formIsValid = false;
+      }
+      if (!this.validateYear()) {
+        this.formIsValid = false;
+      }
+    },
+    async submitForm() {
+      this.validateForm();
+
+      if (!this.formIsValid) {
+        return;
+      }
+
+      const start_date = this.year.value + '-' + this.month.value + '-' + '01';
+      const end_date = this.year.value + '-' + this.month.value + '-' + '31';
+
+      this.report.value = [];
+
+      var getDaysArray = function (start, end) {
+        for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
+          arr.push(new Date(dt).toISOString().slice(0, 10));
+        }
+        return arr;
+      };
+
+      function isInArray(array, value) {
+        return (
+          (
+            array.find((item) => {
+              return item == value;
+            }) || []
+          ).length > 0
+        );
+      }
+
+      function checkDate(start_date, end_date, item_start_date, item_end_date) {
+        let includes = false;
+        let selectDate = getDaysArray(new Date(start_date), new Date(end_date));
+        let itemDate = getDaysArray(new Date(item_start_date), new Date(item_end_date));
+
+        itemDate.map((item) => {
+          if (isInArray(selectDate, item)) {
+            includes = true;
+          }
+        });
+
+        return includes;
+      }
+
+      this.report.value = this.$store.getters.jobs.filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date));
+
+      this.$store.getters.jobs
+        .filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date))
+        .map((job, i) => {
+          this.report.value[i].employee_cost = this.$store.getters.employees.find((employee) => employee.name == job.employee);
+        });
+
+      this.$store.getters.jobs
+        .filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date))
+        .map((job, i) => {
+          this.report.value[i].equipment_cost = this.$store.getters.equipments.filter(
+            (equipment) =>
+              (Array.isArray(job.equipment) && equipment.name == job.equipment[0]) ||
+              (Array.isArray(job.equipment) && equipment.name == job.equipment[1]) ||
+              (Array.isArray(job.equipment) && equipment.name == job.equipment[2]) ||
+              (Array.isArray(job.equipment) && equipment.name == job.equipment[3]) ||
+              (Array.isArray(job.equipment) && equipment.name == job.equipment[4]) ||
+              (Array.isArray(job.equipment) && equipment.name == job.equipment[5]) ||
+              (Array.isArray(job.equipment) && equipment.name == job.equipment[6])
+          );
+        });
+
+      this.report.value.forEach((element) => {
+        let accum = 0;
+        element.equipment_cost.forEach((current) => {
+          accum = +current.usage + accum;
+        });
+
+        element.equipment_cost = accum;
+      });
+
+      this.report.value = this.$store.getters.jobs.filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date));
+
+      this.total.value = 0;
+
+      this.report.value.map((row) => (this.total.value += +row.service));
+
+      this.total1.value = 0;
+
+      this.report.value.map((row) => (this.total1.value += +row.employee_cost.salary));
+
+      this.total2.value = 0;
+
+      this.report.value.map((row) => (this.total2.value += +row.equipment_cost));
+    },
+  },
+};
+</script>

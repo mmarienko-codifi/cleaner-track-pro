@@ -103,7 +103,7 @@ export default {
   },
   computed: {
     getClients() {
-      return this.$store.getters.clients.filter((client) => client.status);
+      return this.$store.getters.clients;
     },
   },
   methods: {

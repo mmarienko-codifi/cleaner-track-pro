@@ -449,3 +449,30 @@
     text-align: center;
   }
 }
+
+.reports {
+  .table {
+    overflow: auto;
+    margin-top: 20px;
+    padding-bottom: 10px;
+  }
+}
+
+.table {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    background-color: var(--color-deactivated);
+  }
+  td {
+    background-color: var(--color-form);
+  }
+  table,
+  th,
+  td {
+    border: 1px solid black;
+    padding: 5px;
+  }
+}

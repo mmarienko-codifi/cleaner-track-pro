@@ -49,7 +49,7 @@ export default {
     },
   
     async loadEquipments(context) {
-      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments.json`);
+      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipment.json`);
   
       const responseData = await response.json();
   

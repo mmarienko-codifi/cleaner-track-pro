@@ -11,7 +11,7 @@
           <select class="form__select" v-model="worksite.value" v-if="getWorksites.length != 0" @blur="validateWorksite()">
             <option :value="worksite.name" v-for="worksite in getWorksites" :key="worksite.id">{{ worksite.name }}</option>
           </select>
-          <span class="form__info" v-else>Clients are not found</span>
+          <span class="form__info" v-else>Worksites are not found</span>
           <p class="form__error" v-if="!worksite.isValid">Worksite must not be empty</p>
         </label>
       </div>
