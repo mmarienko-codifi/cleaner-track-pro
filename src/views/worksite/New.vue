@@ -1,7 +1,20 @@
 <template>
   <ErrorPopup v-if="error" :message="error" />
   <div class="worksite" v-else>
-    <form class="worksite__form form" @submit.prevent="submitForm">
+    <div v-if="isLoading">
+      <Spinner />
+    </div>
+    <form class="worksite__form form" @submit.prevent="submitForm"  v-else-if="hasClients">
+      <div class="form__field" :class="{ 'form__field--invalid': !client.isValid }">
+        <label class="form__label">
+          <span class="form__span">Client</span>
+          <select class="form__select" v-model="client.value" v-if="getClients.length != 0" @blur="validateClient()">
+            <option :value="client.name" v-for="client in getClients" :key="client.id">{{ client.name }}</option>
+          </select>
+          <span class="form__info" v-else>Clients are not found</span>
+          <p class="form__error" v-if="!client.isValid">Client must not be empty</p>
+        </label>
+      </div>
       <div class="form__field" :class="{ 'form__field--invalid': !name.isValid }">
         <label class="form__label">
           <span class="form__span">Name</span>
@@ -48,15 +61,22 @@
 </template>
 
 <script>
+import Spinner from '@/components/Spinner.vue';
 import ErrorPopup from '@/components/ErrorPopup.vue';
 
 export default {
   components: {
+    Spinner,
     ErrorPopup,
   },
   data() {
     return {
+      isLoading: false,
       error: null,
+      client: {
+        value: '',
+        isValid: true,
+      },
       name: {
         value: '',
         isValid: true,
@@ -76,7 +96,36 @@ export default {
       formIsValid: true,
     };
   },
+  async created() {
+    this.isLoading = true;
+    await this.loadClients();
+    this.isLoading = false;
+  },
+  computed: {
+    getClients() {
+      return this.$store.getters.clients.filter((client) => client.status);
+    },
+  },
   methods: {
+    async loadClients() {
+      try {
+        await this.$store.dispatch('loadClients');
+      } catch (error) {
+        this.error = error.message || 'Something went wrong!';
+      }
+    },
+    hasClients() {
+      return !this.isLoading && this.$store.getters.hasClients;
+    },
+    validateClient() {
+      if (this.client.value == '') {
+        this.client.isValid = false;
+        return false;
+      } else {
+        this.client.isValid = true;
+        return true;
+      }
+    },
     validateName() {
       if (this.name.value == '') {
         this.name.isValid = false;
@@ -115,6 +164,9 @@ export default {
     },
     validateForm() {
       this.formIsValid = true;
+      if (!this.validateClient()) {
+        this.formIsValid = false;
+      }
       if (!this.validateName()) {
         this.formIsValid = false;
       }
@@ -136,6 +188,7 @@ export default {
       }
 
       const formData = {
+        client: this.client.value,
         name: this.name.value,
         address: this.address.value,
         type: this.type.value,

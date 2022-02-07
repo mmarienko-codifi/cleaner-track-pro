@@ -50,7 +50,7 @@
     </form>
   </div>
   <div class="form__not-found" v-else>Employee not fount</div>
-  <div class="form__not-found form__error" v-if="!link.isValid">The employee is busy. You can't change the status</div>
+  <div class="form__not-found form__error" v-if="!link.isValid">The employee is busy. You cannot change the status</div>
 </template>
 
 <script>

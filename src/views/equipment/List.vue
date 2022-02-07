@@ -5,11 +5,11 @@
       <Spinner />
     </div>
     <ul class="equipments__list list" v-else-if="hasEquipments">
-      <li class="list__item" :class="{'list__item--deactivated': !equipment.status || equipment.link}" v-for="equipment in getEquipments" :key="equipment.id">
-        <router-link class="list__link" :to="'/equipments/' + equipment.id + '/read'">
+      <li class="list__item" :class="{'list__item--busy': equipment.link, 'list__item--deactivated': !equipment.status}" v-for="equipment in getEquipments" :key="equipment.id">
+        <router-link class="list__link" :to="'/equipment/' + equipment.id + '/read'">
           <span class="list__title"> {{ equipment.name }} | {{ equipment.usage }}$ | {{ equipment.storage }} </span>
-          <router-link class="list__button button" :to="'/equipments/' + equipment.id + '/read'"> Read </router-link>
-          <router-link class="list__button button button--edit" :to="'/equipments/' + equipment.id + '/update'"> Update </router-link>
+          <router-link class="list__button button" :to="'/equipment/' + equipment.id + '/read'"> Read </router-link>
+          <router-link class="list__button button button--edit" :to="'/equipment/' + equipment.id + '/update'"> Update </router-link>
           <a class="list__button button button--delete" @click.prevent="deleteEquipment(equipment)"> Delete </a>
         </router-link>
         <span class="list__busy" v-if="equipment.link"> busy </span>
@@ -17,7 +17,7 @@
       </li>
     </ul>
     <div class="list__not-found" v-else>No equipments found</div>
-    <router-link class="equipments__button button" :to="'/equipments/create'" v-if="!isLoading"> New equipment </router-link>
+    <router-link class="equipments__button button" :to="'/equipment/create'" v-if="!isLoading"> New equipment </router-link>
   </div>
 </template>
 
@@ -72,7 +72,7 @@ export default {
         this.error = error.message || 'Something went wrong!';
       }
       this.isLoading = false;
-      this.$router.replace('/equipments/list');
+      this.$router.replace('/equipment/list');
     },
   },
 };

@@ -140,7 +140,7 @@ export default {
         return;
       }
 
-      this.$router.replace('/equipments/list');
+      this.$router.replace('/equipment/list');
     },
   },
 };

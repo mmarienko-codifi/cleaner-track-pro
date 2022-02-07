@@ -10,7 +10,7 @@ export default {
         status: data.status,
       };
   
-      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments/${newEquipmentID}.json`, {
+      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipment/${newEquipmentID}.json`, {
         method: 'PUT',
         body: JSON.stringify(equipmentData),
       });
@@ -34,7 +34,7 @@ export default {
         link: data.link,
       };
   
-      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments/${data.id}.json`, {
+      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipment/${data.id}.json`, {
         method: 'PUT',
         body: JSON.stringify(equipmentData),
       });
@@ -77,7 +77,7 @@ export default {
         id: data.id,
       };
   
-      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments/${data.id}.json`, {
+      const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipment/${data.id}.json`, {
         method: 'DELETE',
       });
   

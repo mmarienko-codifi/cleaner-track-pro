@@ -42,7 +42,7 @@
           <select class="form__select" v-model="employee.value" v-if="getEmployees.length != 0" @blur="validateEmployee()">
             <option :value="employee.name" v-for="employee in getEmployees" :key="employee.id">{{ employee.name }}</option>
           </select>
-          <span class="form__info" v-else>Active employees aren't found</span>
+          <span class="form__info" v-else>Employees are not found</span>
           <p class="form__error" v-if="!employee.isValid">Employee must not be empty</p>
         </label>
       </div>
@@ -56,7 +56,7 @@
       <div class="form__field" :class="{ 'form__field--invalid': !equipments.isValid }">
         <div class="form__label">
           <span class="form__span">Additional equipment</span>
-          <div class="form__checkboxes">
+          <div class="form__checkboxes" v-if="getEquipments.length != 0">
            <label class="form__checkboxes-item" v-for="equipment in getEquipments" :key="equipment.id">
               <input
                 class="form__checkboxes-input"
@@ -69,6 +69,7 @@
               <span class="form__checkboxes-span">{{ equipment.name }}</span>
             </label>
           </div>
+          <span class="form__info" v-else>Equipment are not found</span>
           <p class="form__error" v-if="!equipments.isValid">Equipment must not be empty</p>
         </div>
       </div>
@@ -126,7 +127,7 @@ export default {
       return this.$store.getters.employees.filter(employee => (employee.status && !employee.link) || ( employee.name == this.job.employee ));
     },
     getEquipments() {
-      return this.$store.getters.equipments.filter(equipment => (equipment.status && !equipment.link) || ( equipment.name == this.job.equipment[0] || equipment.name == this.job.equipment[1] || equipment.name == this.job.equipment[2] || equipment.name == this.job.equipment[3] || equipment.name == this.job.equipment[4]  || equipment.name == this.job.equipment[5]  || equipment.name == this.job.equipment[6]));
+      return this.$store.getters.equipments.filter(equipment => (equipment.status && !equipment.link) || ( Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[0] || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[1] || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[2] || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[3] || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[4]  || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[5]  || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[6]));
     },
     hasWorksites() {
       return !this.isLoading && this.$store.getters.hasWorksites;

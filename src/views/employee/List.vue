@@ -5,7 +5,7 @@
       <Spinner />
     </div>
     <ul class="employees__list list" v-else-if="hasEmployees">
-      <li class="list__item" :class="{'list__item--deactivated': !employee.status || employee.link}" v-for="employee in getEmployees" :key="employee.id">
+      <li class="list__item" :class="{'list__item--busy': employee.link, 'list__item--deactivated': !employee.status}" v-for="employee in getEmployees" :key="employee.id">
         <router-link class="list__link" :to="'/employees/' + employee.id + '/read'">
           <span class="list__title"> {{ employee.name }} | {{ employee.salary }}$ | {{ employee.phone }} </span>
           <router-link class="list__button button" :to="'/employees/' + employee.id + '/read'"> Read </router-link>

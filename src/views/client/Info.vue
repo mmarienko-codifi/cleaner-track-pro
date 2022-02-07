@@ -1,5 +1,9 @@
 <template>
-  <div class="client" v-if="this.client">
+  <ErrorPopup v-if="error" :message="error" />
+  <div v-if="isLoading">
+    <Spinner />
+  </div>
+  <div class="client" v-else-if="hasWorksites && this.client">
     <ul class="client__list list">
       <li class="list__item">
         <div class="list__link">
@@ -31,16 +35,59 @@
           <span class="list__key">Status:</span><span class="list__value">{{ this.client.status ? 'active' : 'inactive' }}</span>
         </div>
       </li>
+      <li class="list__item">
+        <div class="list__link">
+          <span class="list__key">Worksites:</span>
+          <span class="list__value">{{ getWorksites.join(', ') }}</span>
+        </div>
+      </li>
     </ul>
   </div>
   <div class="form__not-found" v-else>Client not fount</div>
 </template>
 
 <script>
+import Spinner from '@/components/Spinner.vue';
+import ErrorPopup from '@/components/ErrorPopup.vue';
+
 export default {
-  props: ['id'],
-  created() {
-    this.client = this.$store.getters.getClientById(this.id);
+  components: {
+    Spinner,
+    ErrorPopup,
   },
+  props: ['id'],
+  data() {
+    return {
+      isLoading: false,
+      error: null,
+      worksite: {
+        value: '',
+        isValid: true,
+      },
+    }
+  },
+  async created() {
+    this.isLoading = true;
+    this.client = this.$store.getters.getClientById(this.id);
+    await this.loadWorksites();
+    this.isLoading = false;
+  },
+  computed: {
+    getWorksites() {
+      return this.$store.getters.worksites.filter((worksite) => worksite.client == this.client.name).map(worksite => worksite.name);
+    },
+    hasWorksites() {
+      return !this.isLoading && this.$store.getters.hasWorksites;
+    },
+  },
+  methods: {
+    async loadWorksites() {
+      try {
+        await this.$store.dispatch('loadWorksites');
+      } catch (error) {
+        this.error = error.message || 'Something went wrong!';
+      }
+    },
+  }
 };
 </script>

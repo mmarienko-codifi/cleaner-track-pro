@@ -48,20 +48,20 @@ const routes = [
     component: () => import('@/views/employee/Edit.vue'),
   },
   {
-    path: '/equipments/list',
+    path: '/equipment/list',
     component: () => import('@/views/equipment/List.vue'),
   },
   {
-    path: '/equipments/create',
+    path: '/equipment/create',
     component: () => import('@/views/equipment/New.vue'),
   },
   {
-    path: '/equipments/:id/read',
+    path: '/equipment/:id/read',
     props: true,
     component: () => import('@/views/equipment/Info.vue'),
   },
   {
-    path: '/equipments/:id/update',
+    path: '/equipment/:id/update',
     props: true,
     component: () => import('@/views/equipment/Edit.vue'),
   },

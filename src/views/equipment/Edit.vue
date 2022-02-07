@@ -36,7 +36,7 @@
     </form>
   </div>
   <div class="form__not-found" v-else>Equipment not fount</div>
-  <div class="form__not-found form__error" v-if="!link.isValid">The equipment is busy. You can't change the status</div>
+  <div class="form__not-found form__error" v-if="!link.isValid">The equipment is busy. You cannot change the status</div>
 </template>
 
 <script>
@@ -158,7 +158,7 @@ export default {
       };
 
       this.$store.dispatch('editEquipment', formData);
-      this.$router.replace('/equipments/list');
+      this.$router.replace('/equipment/list');
     },
   },
 };

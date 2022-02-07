@@ -17,7 +17,7 @@ export default {
         { title: 'Clients', path: '/clients/list' },
         { title: 'Worksites', path: '/worksites/list' },
         { title: 'Employees', path: '/employees/list' },
-        { title: 'Equipments', path: '/equipments/list' },
+        { title: 'Equipment', path: '/equipment/list' },
         { title: 'Jobs', path: '/jobs/list' },
       ],
     };

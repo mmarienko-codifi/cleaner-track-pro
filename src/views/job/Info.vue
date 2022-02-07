@@ -28,7 +28,10 @@
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Additional equipment:</span><span class="list__value">{{ this.job.equipment.join(', ') }}</span>
+          <span class="list__key">Additional equipment:</span>
+          <span class="list__value" v-if="Array.isArray(this.job.equipment)">{{ this.job.equipment.join(', ') }}</span>
+          <span class="list__value" v-else-if="this.job.equipment">{{ this.job.equipment }}</span>
+          <span class="list__value" v-else>null</span>
         </div>
       </li>
       <li class="list__item">

@@ -3,6 +3,11 @@
     <ul class="worksite__list list">
       <li class="list__item">
         <div class="list__link">
+          <span class="list__key">Client:</span><span class="list__value">{{ this.worksite.client }}</span>
+        </div>
+      </li>
+      <li class="list__item">
+        <div class="list__link">
           <span class="list__key">Name:</span><span class="list__value">{{ this.worksite.name }}</span>
         </div>
       </li>

@@ -11,7 +11,7 @@
           <select class="form__select" v-model="worksite.value" v-if="getWorksites.length != 0" @blur="validateWorksite()">
             <option :value="worksite.name" v-for="worksite in getWorksites" :key="worksite.id">{{ worksite.name }}</option>
           </select>
-          <span class="form__info" v-else>Active worksites aren't found</span>
+          <span class="form__info" v-else>Clients are not found</span>
           <p class="form__error" v-if="!worksite.isValid">Worksite must not be empty</p>
         </label>
       </div>
@@ -44,7 +44,7 @@
           <select class="form__select" v-model="employee.value" v-if="getEmployees.length != 0" @blur="validateEmployee()">
             <option :value="employee.name" v-for="employee in getEmployees" :key="employee.id">{{ employee.name }}</option>
           </select>
-          <span class="form__info" v-else>Active employees aren't found</span>
+          <span class="form__info" v-else>Employees are not found</span>
           <p class="form__error" v-if="!employee.isValid">Employee must not be empty</p>
         </label>
       </div>
@@ -71,7 +71,7 @@
               <span class="form__checkboxes-span">{{ equipment.name }}</span>
             </label>
           </div>
-          <span class="form__info" v-else>Active equipments aren't found</span>
+          <span class="form__info" v-else>Equipment are not found</span>
           <p class="form__error" v-if="!equipments.isValid">Equipment must not be empty</p>
         </div>
       </div>

@@ -1,6 +1,18 @@
 <template>
   <div class="worksite" v-if="this.worksite">
-    <form class="worksite__form form" @submit.prevent="submitForm">
+    <div v-if="isLoading">
+      <Spinner />
+    </div>
+    <form class="worksite__form form" @submit.prevent="submitForm"  v-else-if="hasClients">
+      <div class="form__field" :class="{ 'form__field--invalid': !client.isValid }">
+        <label class="form__label">
+          <span class="form__span">Client</span>
+          <select class="form__select" v-model="client.value" v-if="getClients.length != 0" @blur="validateClient()">
+            <option :value="client.name" v-for="client in getClients" :key="client.id">{{ client.name }}</option>
+          </select>
+          <p class="form__error" v-if="!client.isValid">Client must not be empty</p>
+        </label>
+      </div>
       <div class="form__field" :class="{ 'form__field--invalid': !name.isValid }">
         <label class="form__label">
           <span class="form__span">Name</span>
@@ -45,24 +57,38 @@
     </form>
   </div>
   <div class="form__not-found" v-else>Worksite not fount</div>
-  <div class="form__not-found form__error" v-if="!link.isValid">The worksite is busy. You can't change the status</div>
+  <div class="form__not-found form__error" v-if="!link.isValid">The worksite is busy. You cannot change the status</div>
 </template>
 
 <script>
+import Spinner from '@/components/Spinner.vue';
+
 export default {
   props: ['id'],
-  created() {
+  components: {
+    Spinner,
+  },
+  async created() {
     this.worksite = this.$store.getters.getWorksiteById(this.id);
     if (this.worksite) {
+      this.client.value = this.worksite.client;
       this.name.value = this.worksite.name;
       this.address.value = this.worksite.address;
       this.type.value = this.worksite.type;
       this.status.value = this.worksite.status;
       this.link.value = this.worksite.link;
     }
+    this.isLoading = true;
+    await this.loadClients();
+    this.isLoading = false;
   },
   data() {
     return {
+      isLoading: false,
+      client: {
+        value: '',
+        isValid: true,
+      },
       name: {
         value: '',
         isValid: true,
@@ -86,7 +112,31 @@ export default {
       formIsValid: true,
     };
   },
+  computed: {
+    getClients() {
+      return this.$store.getters.clients;
+    },
+    hasClients() {
+      return !this.isLoading && this.$store.getters.hasClients;
+    },
+  },
   methods: {
+    async loadClients() {
+      try {
+        await this.$store.dispatch('loadClients');
+      } catch (error) {
+        this.error = error.message || 'Something went wrong!';
+      }
+    },
+    validateClient() {
+      if (this.client.value == '') {
+        this.client.isValid = false;
+        return false;
+      } else {
+        this.client.isValid = true;
+        return true;
+      }
+    },
     validateName() {
       if (this.name.value == '') {
         this.name.isValid = false;
@@ -134,6 +184,9 @@ export default {
     },
     validateForm() {
       this.formIsValid = true;
+      if (!this.validateClient()) {
+        this.formIsValid = false;
+      }
       if (!this.validateName()) {
         this.formIsValid = false;
       }
@@ -163,7 +216,8 @@ export default {
         address: this.address.value,
         type: this.type.value,
         status: this.status.value,
-        link: this.status.link,
+        link: this.link.value,
+        client: this.client.value
       };
 
       this.$store.dispatch('editWorksite', formData);

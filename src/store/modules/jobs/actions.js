@@ -16,6 +16,7 @@ export default {
 
     const worksiteData = {
       id: data[1].id,
+      client: data[1].client,
       name: data[1].name,
       address: data[1].address,
       type: data[1].type,
@@ -73,7 +74,7 @@ export default {
         link: newJobID,
       };
 
-      fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments/${element.id}.json`, {
+      fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipment/${element.id}.json`, {
         method: 'PUT',
         body: JSON.stringify(equipmentData),
       });
@@ -87,6 +88,7 @@ export default {
 
     const worksiteData2 = {
       id: data[4].id,
+      client: data[4].client,
       name: data[4].name,
       address: data[4].address,
       type: data[4].type,
@@ -132,7 +134,7 @@ export default {
         status: element.status,
       };
 
-      fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments/${element.id}.json`, {
+      fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipment/${element.id}.json`, {
         method: 'PUT',
         body: JSON.stringify(equipmentData),
       });
@@ -152,6 +154,7 @@ export default {
 
     const worksiteData = {
       id: data[1].id,
+      client: data[1].client,
       name: data[1].name,
       address: data[1].address,
       type: data[1].type,
@@ -209,7 +212,7 @@ export default {
         link: data[1].id,
       };
 
-      fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments/${element.id}.json`, {
+      fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipment/${element.id}.json`, {
         method: 'PUT',
         body: JSON.stringify(equipmentData),
       });
@@ -254,6 +257,7 @@ export default {
 
     const worksiteData = {
       id: data[1].id,
+      client: data[1].client,
       name: data[1].name,
       address: data[1].address,
       type: data[1].type,
@@ -307,7 +311,7 @@ export default {
         status: element.status,
       };
 
-      fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipments/${element.id}.json`, {
+      fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipment/${element.id}.json`, {
         method: 'PUT',
         body: JSON.stringify(equipmentData),
       });
