@@ -51,6 +51,8 @@
         <thead>
           <tr>
             <th>Worksite</th>
+            <th>Employee revenue</th>
+            <th>Equipment revenue</th>
             <th>Total revenue</th>
           </tr>
         </thead>
@@ -58,12 +60,16 @@
           <tr v-for="row in report.value" :key="row.id">
             <td>{{ row.worksite }}</td>
             <td>{{ row.service }}$</td>
+            <td>{{ row.service }}$</td>
+            <td>{{ +row.service + +row.service }}$</td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
             <td><b>Total</b></td>
             <td>{{ total.value }}$</td>
+            <td>{{ total.value }}$</td>
+            <td>{{ +total.value + +total.value }}$</td>
           </tr>
         </tfoot>
       </table>
