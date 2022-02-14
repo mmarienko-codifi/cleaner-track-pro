@@ -46,6 +46,12 @@
 
   &--delete {
     background-color: var(--color-delete);
+    min-width: 117px;
+  }
+
+  &--activate {
+    background-color: var(--color-accent);
+    min-width: 117px;
   }
 
   &--logout {
@@ -53,7 +59,7 @@
   }
 
   &:hover {
-    background-color: var(--color-accent);
+    background-color: var(--color-logout);
   }
 }
 
@@ -120,7 +126,7 @@
     justify-content: space-between;
     width: 100%;
 
-    padding: 10px 15px;
+    padding: 7px 15px;
 
     font-weight: bold;
     line-height: 1.4;
@@ -204,7 +210,7 @@
     position: relative;
 
     width: 100%;
-    padding: 5px 15px;
+    padding: 7px 15px;
     margin-top: 5px;
 
     border-radius: var(--border-radius);
@@ -474,5 +480,28 @@
   td {
     border: 1px solid black;
     padding: 5px;
+  }
+}
+
+.notifications.notification-app {
+  margin: 0 10px 5px;
+  padding: 15px;
+  font-size: 18px;
+  font-family: Helvetica, Arial, sans-serif;
+  color: var(--color-main);
+
+  background: var(--color-edit);
+  border-bottom: 3px solid var(--color-rare);
+
+  &.success {
+    background: var(--color-accent);
+  }
+
+  &.warn {
+    background: var(--color-busy);
+  }
+
+  &.error {
+    background: var(--color-delete);
   }
 }

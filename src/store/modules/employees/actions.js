@@ -35,7 +35,6 @@ export default {
       salary: data.salary,
       date: data.date,
       status: data.status,
-      link: data.link,
     };
 
     const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/employees/${data.id}.json`, {
@@ -70,7 +69,6 @@ export default {
         salary: responseData[key].salary,
         date: responseData[key].date,
         status: responseData[key].status,
-        link: responseData[key].link,
       });
       return array;
     }, []);

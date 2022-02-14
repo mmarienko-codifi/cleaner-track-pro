@@ -4,12 +4,12 @@
     <div v-if="isLoading">
       <Spinner />
     </div>
-    <form class="worksite__form form" @submit.prevent="submitForm"  v-else-if="hasClients">
+    <form class="worksite__form form" @submit.prevent="submitForm" v-else>
       <div class="form__field" :class="{ 'form__field--invalid': !client.isValid }">
         <label class="form__label">
           <span class="form__span">Client</span>
           <select class="form__select" v-model="client.value" v-if="getClients.length != 0" @blur="validateClient()">
-            <option :value="client.name" v-for="client in getClients" :key="client.id">{{ client.name }}</option>
+            <option :value="client.id" v-for="client in getClients" :key="client.id">{{ client.name }}</option>
           </select>
           <span class="form__info" v-else>Clients are not found</span>
           <p class="form__error" v-if="!client.isValid">Client must not be empty</p>
@@ -45,16 +45,6 @@
           <p class="form__error" v-if="!type.isValid">Type must not be empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <div class="form__label">
-          <span class="form__span">Status</span>
-          <label class="form__checkbox">
-            <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
-            <span class="form__checkbox-span"></span>
-          </label>
-          <p class="form__error" v-if="!status.isValid">Status must not be empty</p>
-        </div>
-      </div>
       <button class="form__button button">Create</button>
     </form>
   </div>
@@ -63,6 +53,7 @@
 <script>
 import Spinner from '@/components/Spinner.vue';
 import ErrorPopup from '@/components/ErrorPopup.vue';
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   components: {
@@ -89,10 +80,6 @@ export default {
         value: '',
         isValid: true,
       },
-      status: {
-        value: true,
-        isValid: true,
-      },
       formIsValid: true,
     };
   },
@@ -103,7 +90,7 @@ export default {
   },
   computed: {
     getClients() {
-      return this.$store.getters.clients;
+      return this.$store.getters.clients.filter((client) => client.status);
     },
   },
   methods: {
@@ -111,7 +98,12 @@ export default {
       try {
         await this.$store.dispatch('loadClients');
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
+        if (error.message == 'Cannot convert undefined or null to object') {
+          notify({type: 'error', title: "Fill clients!" });
+          this.$router.replace('/clients/list');
+        } else {
+          this.error = error.message || 'Something went wrong!';
+        }
       }
     },
     hasClients() {
@@ -153,15 +145,6 @@ export default {
         return true;
       }
     },
-    validateStatus() {
-      if (this.status.value == undefined) {
-        this.status.isValid = false;
-        return false;
-      } else {
-        this.status.isValid = true;
-        return true;
-      }
-    },
     validateForm() {
       this.formIsValid = true;
       if (!this.validateClient()) {
@@ -174,9 +157,6 @@ export default {
         this.formIsValid = false;
       }
       if (!this.validateType()) {
-        this.formIsValid = false;
-      }
-      if (!this.validateStatus()) {
         this.formIsValid = false;
       }
     },
@@ -192,15 +172,19 @@ export default {
         name: this.name.value,
         address: this.address.value,
         type: this.type.value,
-        status: this.status.value,
+        status: true,
       };
 
       try {
         await this.$store.dispatch('addWorksite', formData);
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
-        return;
+        if (error.message != "Cannot read properties of undefined (reading 'push')") {
+          this.error = error.message || 'Something went wrong!';
+          return;
+        }
       }
+
+      notify({type: 'success', title: "The client was added!" });
 
       this.$router.replace('/worksites/list');
     },

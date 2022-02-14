@@ -23,16 +23,6 @@
           <p class="form__error" v-if="!usage.isValid">Usage fee is not a number or empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <div class="form__label">
-          <span class="form__span">Status</span>
-          <label class="form__checkbox">
-            <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
-            <span class="form__checkbox-span"></span>
-          </label>
-          <p class="form__error" v-if="!status.isValid">Status must not be empty</p>
-        </div>
-      </div>
       <button class="form__button button">Create</button>
     </form>
   </div>
@@ -40,6 +30,7 @@
 
 <script>
 import ErrorPopup from '@/components/ErrorPopup.vue';
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   components: {
@@ -58,10 +49,6 @@ export default {
       },
       usage: {
         value: '',
-        isValid: true,
-      },
-      status: {
-        value: true,
         isValid: true,
       },
       formIsValid: true,
@@ -95,15 +82,6 @@ export default {
         return true;
       }
     },
-    validateStatus() {
-      if (this.status.value == undefined) {
-        this.status.isValid = false;
-        return false;
-      } else {
-        this.status.isValid = true;
-        return true;
-      }
-    },
     validateForm() {
       this.formIsValid = true;
       if (!this.validateName()) {
@@ -113,9 +91,6 @@ export default {
         this.formIsValid = false;
       }
       if (!this.validateUsage()) {
-        this.formIsValid = false;
-      }
-      if (!this.validateStatus()) {
         this.formIsValid = false;
       }
     },
@@ -130,15 +105,19 @@ export default {
         name: this.name.value,
         storage: this.storage.value,
         usage: this.usage.value,
-        status: this.status.value,
+        status: true,
       };
 
       try {
         await this.$store.dispatch('addEquipment', formData);
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
-        return;
+        if (error.message != "Cannot read properties of undefined (reading 'push')") {
+          this.error = error.message || 'Something went wrong!';
+          return;
+        }
       }
+
+      notify({type: 'success', title: "The equipment was added!" });
 
       this.$router.replace('/equipment/list');
     },

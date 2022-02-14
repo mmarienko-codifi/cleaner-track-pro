@@ -4,14 +4,16 @@
     <div v-if="isLoading">
       <Spinner />
     </div>
-    <ul class="jobs__list list" v-else-if="hasJobs">
-      <li class="list__item" v-for="job in getJobs" :key="job.id">
+    <ul class="jobs__list list" v-else-if="hasJobs && hasEmployees && hasWorksites">
+      <li class="list__item" v-for="job in getJobs" :class="{'list__item--deactivated': !job.status}" :key="job.id">
         <router-link class="list__link" :to="'/jobs/' + job.id + '/read'">
-          <span class="list__title"> {{ job.worksite }} | {{ job.employee }} | {{ job.service }}$ </span>
-          <router-link class="list__button button" :to="'/jobs/' + job.id + '/read'"> Read </router-link>
-          <router-link class="list__button button button--edit" :to="'/jobs/' + job.id + '/update'"> Update </router-link>
-          <a class="list__button button button--delete" @click.prevent="deleteJob(job)"> Delete </a>
+          <span class="list__title"> {{ this.$store.getters.getWorksiteById(job.worksite).name }} ({{ this.$store.getters.getEmployeeById(job.employee).name }} | {{ job.service }}$) </span>
+          <router-link class="list__button button" :to="'/jobs/' + job.id + '/read'"> Details </router-link>
+          <router-link class="list__button button button--edit" :to="'/jobs/' + job.id + '/update'"> Edit </router-link>
+          <a class="list__button button button--delete" v-if="job.status == true" @click.prevent="deleteJob(job)"> Deactivate </a>
+          <a class="list__button button button--activate" v-else @click.prevent="activateJob(job)"> Activate </a>
         </router-link>
+        <span class="list__deactivated" v-if="!job.status"> deactivated </span>
       </li>
     </ul>
     <div class="list__not-found" v-else>No jobs found</div>
@@ -22,6 +24,7 @@
 <script>
 import Spinner from '@/components/Spinner.vue';
 import ErrorPopup from '@/components/ErrorPopup.vue';
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   components: {
@@ -36,21 +39,21 @@ export default {
   },
   async created() {
     this.isLoading = true;
-    await this.loadJobs();
     await this.loadWorksites();
     await this.loadEmployees();
     await this.loadEquipments();
+    await this.loadJobs();
     this.isLoading = false;
   },
   computed: {
     getWorksites() {
-      return this.$store.getters.worksites.filter((worksite) => worksite.status && !worksite.link);
+      return this.$store.getters.worksites.filter((worksite) => worksite.status && !worksite.client);
     },
     getEmployees() {
-      return this.$store.getters.employees.filter((employee) => employee.status && !employee.link);
+      return this.$store.getters.employees.filter((employee) => employee.status);
     },
     getEquipments() {
-      return this.$store.getters.equipments.filter((equipment) => equipment.status && !equipment.link);
+      return this.$store.getters.equipments.filter((equipment) => equipment.status);
     },
     getJobs() {
       return this.$store.getters.jobs;
@@ -58,27 +61,45 @@ export default {
     hasJobs() {
       return !this.isLoading && this.$store.getters.hasJobs;
     },
+    hasEmployees() {
+      return !this.isLoading && this.$store.getters.hasEmployees;
+    },
+    hasWorksites() {
+      return !this.isLoading && this.$store.getters.hasWorksites;
+    },
   },
   methods: {
     async loadWorksites() {
       try {
         await this.$store.dispatch('loadWorksites');
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
+        if (error.message != 'Cannot convert undefined or null to object') {
+          if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+        }
       }
     },
     async loadEmployees() {
       try {
         await this.$store.dispatch('loadEmployees');
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
+        if (error.message != 'Cannot convert undefined or null to object') {
+          if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+        }
       }
     },
     async loadEquipments() {
       try {
         await this.$store.dispatch('loadEquipments');
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
+        if (error.message != 'Cannot convert undefined or null to object') {
+          if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+        }
       }
     },
     async loadJobs() {
@@ -87,7 +108,9 @@ export default {
         await this.$store.dispatch('loadJobs');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
+          if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
+        }
         }
       }
       this.isLoading = false;
@@ -95,21 +118,63 @@ export default {
     async deleteJob(data) {
       this.isLoading = true;
 
-      this.job = this.$store.getters.getJobById(data.id);
+      const formData = this.$store.getters.getJobById(data.id);
 
-      const selectedWorksite = this.$store.getters.worksites.find((worksite) => worksite.name == this.job.worksite);
-      const selectedEmployee = this.$store.getters.employees.find((employee) => employee.name == this.job.employee);
-      const selectedEquipment = this.job.equipment ? this.$store.getters.equipments.filter((equipment) => equipment.name == this.job.equipment[0] || equipment.name == this.job.equipment[1] || equipment.name == this.job.equipment[2] || equipment.name == this.job.equipment[3] || equipment.name == this.job.equipment[4]) : [];
+      formData.status = false;
 
-      const formData = {
-        id: data.id,
-      };
+      const selectedWorksite = this.$store.getters.worksites.find((worksite) => worksite.id == data.worksite);
+      selectedWorksite.link = null;
 
       try {
-        await this.$store.dispatch('deleteJob', [formData, selectedWorksite, selectedEmployee, selectedEquipment]);
+        await this.$store.dispatch('editJob', formData);
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
       }
+
+      try {
+        await this.$store.dispatch('editWorksite', selectedWorksite);
+      } catch (error) {
+        if (error.message != "Cannot read properties of undefined (reading 'push')") {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+
+      this.isLoading = false;
+      this.$router.replace('/jobs/list');
+    },
+    async activateJob(data) {
+      this.isLoading = true;
+
+      const formData = this.$store.getters.getJobById(data.id);
+      const selectedWorksite = this.$store.getters.worksites.find((worksite) => worksite.id == data.worksite);
+
+      if (!selectedWorksite.link) {
+        selectedWorksite.link = formData.id;
+        formData.status = true;
+      } else {
+        notify({type: 'error', title: "The job has busy worksite. You cannot activate it." });
+        this.isLoading = false;
+        return;
+      }
+
+      try {
+        await this.$store.dispatch('editJob', formData);
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+
+      try {
+        await this.$store.dispatch('editWorksite', selectedWorksite);
+      } catch (error) {
+        if (error.message != "Cannot read properties of undefined (reading 'push')") {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+
       this.isLoading = false;
       this.$router.replace('/jobs/list');
     },

@@ -2,6 +2,7 @@
   <component :is="layout">
     <router-view />
   </component>
+  <notifications classes="notifications notification-app" position="bottom right"/>
 </template>
 
 <script>

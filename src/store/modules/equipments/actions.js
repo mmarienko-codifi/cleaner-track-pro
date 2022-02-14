@@ -31,7 +31,6 @@ export default {
         storage: data.storage,
         usage: data.usage,
         status: data.status,
-        link: data.link,
       };
   
       const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/equipment/${data.id}.json`, {
@@ -64,7 +63,6 @@ export default {
           storage: responseData[key].storage,
           usage: responseData[key].usage,
           status: responseData[key].status,
-          link: responseData[key].link,
         });
         return array;
       }, []);

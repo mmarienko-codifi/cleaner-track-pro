@@ -8,7 +8,7 @@
         <label class="form__label">
           <span class="form__span">Worksite</span>
           <select class="form__select" v-model="worksite.value" @blur="validateWorksite()">
-            <option :value="worksite.name" v-for="worksite in getWorksites" :key="worksite.id">{{ worksite.name }}</option>
+            <option :value="worksite.id" v-for="worksite in getWorksites" :key="worksite.id">{{ worksite.name }}</option>
           </select>
           <p class="form__error" v-if="!worksite.isValid">Worksite must not be empty</p>
         </label>
@@ -40,7 +40,7 @@
         <label class="form__label">
           <span class="form__span">Employee</span>
           <select class="form__select" v-model="employee.value" v-if="getEmployees.length != 0" @blur="validateEmployee()">
-            <option :value="employee.name" v-for="employee in getEmployees" :key="employee.id">{{ employee.name }}</option>
+            <option :value="employee.id" v-for="employee in getEmployees" :key="employee.id">{{ employee.name }}</option>
           </select>
           <span class="form__info" v-else>Employees are not found</span>
           <p class="form__error" v-if="!employee.isValid">Employee must not be empty</p>
@@ -62,7 +62,7 @@
                 class="form__checkboxes-input"
                 type="checkbox"
                 name="equipments[]"
-                :value="equipment.name"
+                :value="equipment.id"
                 v-model="equipments.value"
                 @blur="validateEquipment()"
               />
@@ -95,6 +95,7 @@
 
 <script>
 import Spinner from '@/components/Spinner.vue';
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   props: ['id'],
@@ -112,6 +113,7 @@ export default {
       this.equipments.value = this.job.equipment ? this.job.equipment : [];
       this.start_date.value = this.job.start_date;
       this.end_date.value = this.job.end_date;
+      this.status.value = this.job.status;
     }
     this.isLoading = true;
     await this.loadWorksites();
@@ -121,13 +123,13 @@ export default {
   },
   computed: {
     getWorksites() {
-      return this.$store.getters.worksites.filter(worksite => (worksite.status && !worksite.link) || ( worksite.name == this.job.worksite));
+      return this.$store.getters.worksites.filter(worksite => (worksite.status && !worksite.link) || ( worksite.id == this.job.worksite));
     },
     getEmployees() {
-      return this.$store.getters.employees.filter(employee => (employee.status && !employee.link) || ( employee.name == this.job.employee ));
+      return this.$store.getters.employees.filter(employee => employee.status);
     },
     getEquipments() {
-      return this.$store.getters.equipments.filter(equipment => (equipment.status && !equipment.link) || ( Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[0] || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[1] || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[2] || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[3] || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[4]  || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[5]  || Array.isArray(this.job.equipment) && equipment.name == this.job.equipment[6]));
+      return this.$store.getters.equipments.filter(equipment => equipment.status);
     },
     hasWorksites() {
       return !this.isLoading && this.$store.getters.hasWorksites;
@@ -171,6 +173,10 @@ export default {
         isValid: true,
       },
       end_date: {
+        value: '',
+        isValid: true,
+      },
+      status: {
         value: '',
         isValid: true,
       },
@@ -308,10 +314,6 @@ export default {
         return;
       }
 
-      const selectedWorksite = this.$store.getters.worksites.find((worksite) => worksite.name == this.worksite.value);
-      const selectedEmployee = this.$store.getters.employees.find((employee) => employee.name == this.employee.value);
-      const selectedEquipment = this.equipments ? this.$store.getters.equipments.filter((equipment) => equipment.name == this.equipments.value[0] || equipment.name == this.equipments.value[1] || equipment.name == this.equipments.value[2] || equipment.name == this.equipments.value[3] || equipment.name == this.equipments.value[4] || equipment.name == this.equipments.value[5] || equipment.name == this.equipments.value[6]) : [];
-
       const formData = {
         id: this.id,
         worksite: this.worksite.value,
@@ -322,15 +324,13 @@ export default {
         equipment: this.equipments.value,
         start_date: this.start_date.value,
         end_date: this.end_date.value,
+        status: this.status.value,
       };
 
       this.job = this.$store.getters.getJobById(this.id);
 
-      const oldWorksite = this.$store.getters.worksites.find((worksite) => worksite.name == this.job.worksite);
-      const oldEmployee = this.$store.getters.employees.find((employee) => employee.name == this.job.employee);
-      const oldEquipment = this.job.equipment ? this.$store.getters.equipments.filter((equipment) => equipment.name == this.job.equipment[0] || equipment.name == this.job.equipment[1] || equipment.name == this.job.equipment[2] || equipment.name == this.job.equipment[3] || equipment.name == this.job.equipment[4] || equipment.name == this.job.equipment[5] || equipment.name == this.job.equipment[6]) : [];
-
-      this.$store.dispatch('editJob', [formData, selectedWorksite, selectedEmployee, selectedEquipment, oldWorksite, oldEmployee, oldEquipment]);
+      this.$store.dispatch('editJob', formData);
+      notify({type: 'success', title: "The job was edited!" });
       this.$router.replace('/jobs/list');
     },
   },

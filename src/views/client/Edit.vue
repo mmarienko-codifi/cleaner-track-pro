@@ -39,24 +39,15 @@
           <p class="form__error" v-if="!type.isValid">At least one expertise must be selected</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <div class="form__label">
-          <span class="form__span">Status</span>
-          <label class="form__checkbox">
-            <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
-            <span class="form__checkbox-span"></span>
-          </label>
-          <p class="form__error" v-if="!status.isValid">Status must not be empty</p>
-        </div>
-      </div>
       <button class="form__button button">Edit</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Client not fount</div>
-   <div class="form__not-found form__error" v-if="!busy.isValid">The client is busy. You cannot change the status</div>
 </template>
 
 <script>
+import { notify } from "@kyvg/vue3-notification";
+
 export default {
   props: ['id'],
   async created() {
@@ -94,19 +85,13 @@ export default {
         isValid: true,
       },
       status: {
-        value: true,
-        isValid: true,
-      },
-      busy: {
+        value: '',
         isValid: true,
       },
       formIsValid: true,
     };
   },
   methods: {
-    getActiveWorksites() {
-      return this.$store.getters.worksites.filter((worksite) => worksite.client == this.name.value && worksite.link);
-    },
     async loadWorksites() {
       this.isLoading = true;
       try {
@@ -163,15 +148,6 @@ export default {
         return true;
       }
     },
-    validateStatus() {
-      if (this.status.value == undefined) {
-        this.status.isValid = false;
-        return false;
-      } else {
-        this.status.isValid = true;
-        return true;
-      }
-    },
     validateForm() {
       this.formIsValid = true;
       if (!this.validateName()) {
@@ -189,22 +165,12 @@ export default {
       if (!this.validateType()) {
         this.formIsValid = false;
       }
-      if (!this.validateStatus()) {
-        this.formIsValid = false;
-      }
     },
     submitForm() {
       this.validateForm();
 
       if (!this.formIsValid) {
         return;
-      }
-
-      if (this.getActiveWorksites().length > 0) {
-        this.busy.isValid = false;
-        return;
-      } else {
-        this.busy.isValid = true;
       }
 
       const formData = {
@@ -218,6 +184,7 @@ export default {
       };
 
       this.$store.dispatch('editClient', formData);
+      notify({type: 'success', title: "The client was edited!" });
       this.$router.replace('/clients/list');
     },
   },

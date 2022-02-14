@@ -3,7 +3,7 @@
   <div v-if="isLoading">
     <Spinner />
   </div>
-  <div class="client" v-else-if="hasWorksites && this.client">
+  <div class="client" v-else-if="this.client">
     <ul class="client__list list">
       <li class="list__item">
         <div class="list__link">
@@ -38,7 +38,8 @@
       <li class="list__item">
         <div class="list__link">
           <span class="list__key">Worksites:</span>
-          <span class="list__value">{{ getWorksites.join(', ') }}</span>
+          <span class="list__value" v-if="hasWorksites">{{ getWorksites.join(', ') }}</span>
+          <span class="list__value" v-else>none</span>
         </div>
       </li>
     </ul>
@@ -85,7 +86,9 @@ export default {
       try {
         await this.$store.dispatch('loadWorksites');
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
       }
     },
   }

@@ -37,16 +37,6 @@
           <p class="form__error" v-if="!date.isValid">Date later than today or empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <div class="form__label">
-          <span class="form__span">Status</span>
-          <label class="form__checkbox">
-            <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
-            <span class="form__checkbox-span"></span>
-          </label>
-          <p class="form__error" v-if="!status.isValid">Status must not be empty</p>
-        </div>
-      </div>
       <button class="form__button button">Create</button>
     </form>
   </div>
@@ -54,6 +44,7 @@
 
 <script>
 import ErrorPopup from '@/components/ErrorPopup.vue';
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   components: {
@@ -80,10 +71,6 @@ export default {
       },
       date: {
         value: '',
-        isValid: true,
-      },
-      status: {
-        value: true,
         isValid: true,
       },
       formIsValid: true,
@@ -139,15 +126,6 @@ export default {
         return true;
       }
     },
-    validateStatus() {
-      if (this.status.value == undefined) {
-        this.status.isValid = false;
-        return false;
-      } else {
-        this.status.isValid = true;
-        return true;
-      }
-    },
     validateForm() {
       this.formIsValid = true;
       if (!this.validateName()) {
@@ -165,9 +143,6 @@ export default {
       if (!this.validateDate()) {
         this.formIsValid = false;
       }
-      if (!this.validateStatus()) {
-        this.formIsValid = false;
-      }
     },
     async submitForm() {
       this.validateForm();
@@ -182,15 +157,19 @@ export default {
         phone: this.phone.value,
         salary: this.salary.value,
         date: this.date.value,
-        status: this.status.value,
+        status: true,
       };
 
       try {
         await this.$store.dispatch('addEmployee', formData);
       } catch (error) {
-        this.error = error.message || 'Something went wrong!';
-        return;
+        if (error.message != "Cannot read properties of undefined (reading 'push')") {
+          this.error = error.message || 'Something went wrong!';
+          return;
+        }
       }
+
+      notify({type: 'success', title: "The employee was added!" });
 
       this.$router.replace('/employees/list');
     },

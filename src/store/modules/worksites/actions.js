@@ -28,12 +28,12 @@ export default {
     async editWorksite(context, data) {
       const worksiteData = {
         id: data.id,
+        client: data.client,
         name: data.name,
         address: data.address,
         type: data.type,
         status: data.status,
         link: data.link,
-        client: data.client,
       };
   
       const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/worksites/${data.id}.json`, {
@@ -62,12 +62,12 @@ export default {
       const worksites = Object.keys(responseData).reduce((array, key) => {
         array.push({
           id: responseData[key].id,
+          client: responseData[key].client,
           name: responseData[key].name,
           address: responseData[key].address,
           type: responseData[key].type,
           status: responseData[key].status,
           link: responseData[key].link,
-          client: responseData[key].client,
         });
         return array;
       }, []);

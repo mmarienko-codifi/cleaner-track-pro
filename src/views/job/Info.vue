@@ -3,7 +3,7 @@
     <ul class="job__list list">
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Worksite:</span><span class="list__value">{{ this.job.worksite }}</span>
+          <span class="list__key">Worksite:</span><span class="list__value">{{ this.$store.getters.getWorksiteById(this.job.worksite).name }}</span>
         </div>
       </li>
       <li class="list__item">
@@ -18,7 +18,7 @@
       </li>
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Employee:</span><span class="list__value">{{ this.job.employee }}</span>
+          <span class="list__key">Employee:</span><span class="list__value">{{ this.$store.getters.getEmployeeById(this.job.employee).name }}</span>
         </div>
       </li>
       <li class="list__item">
@@ -31,7 +31,7 @@
           <span class="list__key">Additional equipment:</span>
           <span class="list__value" v-if="Array.isArray(this.job.equipment)">{{ this.job.equipment.join(', ') }}</span>
           <span class="list__value" v-else-if="this.job.equipment">{{ this.job.equipment }}</span>
-          <span class="list__value" v-else>null</span>
+          <span class="list__value" v-else>none</span>
         </div>
       </li>
       <li class="list__item">
@@ -42,6 +42,11 @@
       <li class="list__item">
         <div class="list__link">
           <span class="list__key">End date:</span><span class="list__value">{{ this.job.end_date }}</span>
+        </div>
+      </li>
+      <li class="list__item">
+        <div class="list__link">
+          <span class="list__key">Status:</span><span class="list__value">{{ this.job.status ? 'active' : 'inactive' }}</span>
         </div>
       </li>
     </ul>

@@ -22,24 +22,15 @@
           <p class="form__error" v-if="!usage.isValid">Usage fee is not a number or empty</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <div class="form__label">
-          <span class="form__span">Status</span>
-          <label class="form__checkbox">
-            <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
-            <span class="form__checkbox-span"></span>
-          </label>
-          <p class="form__error" v-if="!status.isValid">Status must not be empty</p>
-        </div>
-      </div>
       <button class="form__button button">Edit</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Equipment not fount</div>
-  <div class="form__not-found form__error" v-if="!link.isValid">The equipment is busy. You cannot change the status</div>
 </template>
 
 <script>
+import { notify } from "@kyvg/vue3-notification";
+
 export default {
   props: ['id'],
   created() {
@@ -49,7 +40,6 @@ export default {
       this.storage.value = this.equipment.storage;
       this.usage.value = this.equipment.usage;
       this.status.value = this.equipment.status;
-      this.link.value = this.equipment.link;
     }
   },
   data() {
@@ -68,10 +58,6 @@ export default {
       },
       status: {
         value: true,
-        isValid: true,
-      },
-      link: {
-        value: '',
         isValid: true,
       },
       formIsValid: true,
@@ -114,15 +100,6 @@ export default {
         return true;
       }
     },
-    validateLink() {
-      if (!this.link.value) {
-        this.link.isValid = true;
-        return true;
-      } else {
-        this.link.isValid = false;
-        return false;
-      }
-    },
     validateForm() {
       this.formIsValid = true;
       if (!this.validateName()) {
@@ -135,9 +112,6 @@ export default {
         this.formIsValid = false;
       }
       if (!this.validateStatus()) {
-        this.formIsValid = false;
-      }
-      if (!this.validateLink()) {
         this.formIsValid = false;
       }
     },
@@ -154,10 +128,10 @@ export default {
         storage: this.storage.value,
         usage: this.usage.value,
         status: this.status.value,
-        link: this.status.link,
       };
 
       this.$store.dispatch('editEquipment', formData);
+      notify({type: 'success', title: "The equipment was edited!" });
       this.$router.replace('/equipment/list');
     },
   },

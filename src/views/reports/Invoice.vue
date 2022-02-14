@@ -152,7 +152,9 @@ export default {
         await this.$store.dispatch('loadJobs');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
+          if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
+        }
         }
       }
       this.isLoading = false;
@@ -163,7 +165,9 @@ export default {
         await this.$store.dispatch('loadEquipments');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
+          if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
+        }
         }
       }
       this.isLoading = false;
@@ -174,7 +178,9 @@ export default {
         await this.$store.dispatch('loadEmployees');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
+          if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
+        }
         }
       }
       this.isLoading = false;

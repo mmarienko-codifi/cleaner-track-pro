@@ -8,7 +8,7 @@
         <label class="form__label">
           <span class="form__span">Client</span>
           <select class="form__select" v-model="client.value" v-if="getClients.length != 0" @blur="validateClient()">
-            <option :value="client.name" v-for="client in getClients" :key="client.id">{{ client.name }}</option>
+            <option :value="client.id" v-for="client in getClients" :key="client.id">{{ client.name }}</option>
           </select>
           <p class="form__error" v-if="!client.isValid">Client must not be empty</p>
         </label>
@@ -43,25 +43,15 @@
           <p class="form__error" v-if="!type.isValid">At least one expertise must be selected</p>
         </label>
       </div>
-      <div class="form__field" :class="{ 'form__field--invalid': !status.isValid }">
-        <div class="form__label">
-          <span class="form__span">Status</span>
-          <label class="form__checkbox">
-            <input class="form__checkbox-input" name="status" type="checkbox" v-model="status.value" checked @blur="validateStatus()" />
-            <span class="form__checkbox-span"></span>
-          </label>
-          <p class="form__error" v-if="!status.isValid">Status must not be empty</p>
-        </div>
-      </div>
       <button class="form__button button">Edit</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Worksite not fount</div>
-  <div class="form__not-found form__error" v-if="!link.isValid">The worksite is busy. You cannot change the status</div>
 </template>
 
 <script>
 import Spinner from '@/components/Spinner.vue';
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   props: ['id'],
@@ -106,7 +96,7 @@ export default {
         isValid: true,
       },
       link: {
-        value: '',
+        value: 'company',
         isValid: true,
       },
       formIsValid: true,
@@ -173,15 +163,6 @@ export default {
         return true;
       }
     },
-    validateLink() {
-      if (!this.link.value) {
-        this.link.isValid = true;
-        return true;
-      } else {
-        this.link.isValid = false;
-        return false;
-      }
-    },
     validateForm() {
       this.formIsValid = true;
       if (!this.validateClient()) {
@@ -199,9 +180,6 @@ export default {
       if (!this.validateStatus()) {
         this.formIsValid = false;
       }
-      if (!this.validateLink()) {
-        this.formIsValid = false;
-      }
     },
     submitForm() {
       this.validateForm();
@@ -212,15 +190,16 @@ export default {
 
       const formData = {
         id: this.id,
+        client: this.client.value,
         name: this.name.value,
         address: this.address.value,
         type: this.type.value,
         status: this.status.value,
-        link: this.link.value,
-        client: this.client.value
+        link: this.link?.value,
       };
 
       this.$store.dispatch('editWorksite', formData);
+      notify({type: 'success', title: "The worksite was edited!" });
       this.$router.replace('/worksites/list');
     },
   },
