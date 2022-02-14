@@ -22,7 +22,7 @@
           <p class="form__error" v-if="!usage.isValid">Usage fee is not a number or empty</p>
         </label>
       </div>
-      <button class="form__button button">Edit</button>
+      <button class="form__button button">Save</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Equipment not fount</div>

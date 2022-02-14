@@ -42,6 +42,7 @@
           <span class="list__value" v-else>none</span>
         </div>
       </li>
+      <router-link :to="'/clients/'+this.id+'/update'" class="form__button button">Edit</router-link>
     </ul>
   </div>
   <div class="form__not-found" v-else>Client not fount</div>
@@ -61,10 +62,6 @@ export default {
     return {
       isLoading: false,
       error: null,
-      worksite: {
-        value: '',
-        isValid: true,
-      },
     }
   },
   async created() {
@@ -75,7 +72,7 @@ export default {
   },
   computed: {
     getWorksites() {
-      return this.$store.getters.worksites.filter((worksite) => worksite.client == this.client.name).map(worksite => worksite.name);
+      return this.$store.getters.worksites.filter((worksite) => worksite.client == this.client.id).map(worksite => worksite.name);
     },
     hasWorksites() {
       return !this.isLoading && this.$store.getters.hasWorksites;

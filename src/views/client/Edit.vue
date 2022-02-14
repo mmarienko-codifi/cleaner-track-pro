@@ -39,7 +39,7 @@
           <p class="form__error" v-if="!type.isValid">At least one expertise must be selected</p>
         </label>
       </div>
-      <button class="form__button button">Edit</button>
+      <button class="form__button button">Save</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Client not fount</div>

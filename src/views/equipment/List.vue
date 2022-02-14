@@ -19,7 +19,7 @@
       </li>
     </ul>
     <div class="list__not-found" v-else>No equipments found</div>
-    <router-link class="equipments__button button" :to="'/equipment/create'" v-if="!isLoading"> New equipment </router-link>
+    <router-link class="equipments__button button" :to="'/equipment/create'" v-if="!isLoading"> Create equipment </router-link>
   </div>
 </template>
 
@@ -39,8 +39,9 @@ export default {
       error: null,
     };
   },
-  created() {
-    this.loadEquipments();
+  async created() {
+    await this.loadJobs();
+    await this.loadEquipments();
   },
   computed: {
     getEquipments() {
@@ -52,12 +53,25 @@ export default {
   },
   methods: {
     getActiveJobs(equipment) {
-      return this.$store.getters.jobs.filter((job) => job.equipment == equipment.id && job.status);
+      return this.$store.getters.jobs.filter((job) => job.equipment[0] == equipment.id || job.equipment[1] == equipment.id || job.equipment[2] == equipment.id || job.equipment[3] == equipment.id || job.equipment[4] == equipment.id || job.equipment[5] == equipment.id || job.equipment[6] == equipment.id && job.status);
     },
     async loadEquipments() {
       this.isLoading = true;
       try {
         await this.$store.dispatch('loadEquipments');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+        }
+      }
+      this.isLoading = false;
+    },
+    async loadJobs() {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch('loadJobs');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
           if (error.message != 'Cannot convert undefined or null to object') {

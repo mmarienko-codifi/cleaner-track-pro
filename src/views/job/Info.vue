@@ -49,6 +49,7 @@
           <span class="list__key">Status:</span><span class="list__value">{{ this.job.status ? 'active' : 'inactive' }}</span>
         </div>
       </li>
+      <router-link :to="'/jobs/'+this.id+'/update'" class="form__button button">Edit</router-link>
     </ul>
   </div>
   <div class="form__not-found" v-else>Job not fount</div>

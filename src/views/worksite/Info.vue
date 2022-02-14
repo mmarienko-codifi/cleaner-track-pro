@@ -26,6 +26,7 @@
           <span class="list__key">Status:</span><span class="list__value">{{ this.worksite.status ? 'active' : 'inactive' }}</span>
         </div>
       </li>
+      <router-link :to="'/worksites/'+this.id+'/update'" class="form__button button">Edit</router-link>
     </ul>
   </div>
   <div class="form__not-found" v-else>Worksite not fount</div>

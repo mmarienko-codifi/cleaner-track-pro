@@ -17,7 +17,7 @@
       </li>
     </ul>
     <div class="list__not-found" v-else>No jobs found</div>
-    <router-link class="jobs__button button" :to="'/jobs/create'" v-if="!isLoading"> New job </router-link>
+    <router-link class="jobs__button button" :to="'/jobs/create'" v-if="!isLoading"> Create job </router-link>
   </div>
 </template>
 

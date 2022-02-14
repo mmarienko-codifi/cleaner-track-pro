@@ -19,7 +19,7 @@
       </li>
     </ul>
     <div class="list__not-found" v-else>No employees found</div>
-    <router-link class="employees__button button" :to="'/employees/create'" v-if="!isLoading"> New employee </router-link>
+    <router-link class="employees__button button" :to="'/employees/create'" v-if="!isLoading"> Create employee </router-link>
   </div>
 </template>
 
@@ -39,8 +39,9 @@ export default {
       error: null,
     };
   },
-  created() {
-    this.loadEmployees();
+  async created() {
+    await this.loadJobs();
+    await this.loadEmployees();
   },
   computed: {
     getEmployees() {
@@ -60,9 +61,18 @@ export default {
         await this.$store.dispatch('loadEmployees');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
-          if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
         }
+      }
+      this.isLoading = false;
+    },
+    async loadJobs() {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch('loadJobs');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
         }
       }
       this.isLoading = false;

@@ -36,7 +36,7 @@
           <p class="form__error" v-if="!date.isValid">Date later than today or empty</p>
         </label>
       </div>
-      <button class="form__button button">Edit</button>
+      <button class="form__button button">Save</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Employee not fount</div>

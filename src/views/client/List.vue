@@ -19,7 +19,7 @@
       </li>
     </ul>
     <div class="list__not-found" v-else>No clients found</div>
-    <router-link class="clients__button button" :to="'/clients/create'" v-if="!isLoading"> New client </router-link>
+    <router-link class="clients__button button" :to="'/clients/create'" v-if="!isLoading"> Create client </router-link>
   </div>
 </template>
 

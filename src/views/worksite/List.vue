@@ -18,7 +18,7 @@
       </li>
     </ul>
     <div class="list__not-found" v-else>No worksites found</div>
-    <router-link class="worksites__button button" :to="'/worksites/create'" v-if="!isLoading"> New worksite </router-link>
+    <router-link class="worksites__button button" :to="'/worksites/create'" v-if="!isLoading"> Create worksite </router-link>
   </div>
 </template>
 

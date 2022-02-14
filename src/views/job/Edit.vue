@@ -87,7 +87,7 @@
           <p class="form__error" v-if="!end_date.isValid">End date earlier than Start date or empty</p>
         </label>
       </div>
-      <button class="form__button button">Edit</button>
+      <button class="form__button button">Save</button>
     </form>
   </div>
   <div class="form__not-found" v-else>Job not fount</div>

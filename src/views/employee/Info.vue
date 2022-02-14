@@ -31,6 +31,7 @@
           <span class="list__key">Status:</span><span class="list__value">{{ this.employee.status ? 'active' : 'inactive' }}</span>
         </div>
       </li>
+      <router-link :to="'/employees/'+this.id+'/update'" class="form__button button">Edit</router-link>
     </ul>
   </div>
   <div class="form__not-found" v-else>Employee not fount</div>
