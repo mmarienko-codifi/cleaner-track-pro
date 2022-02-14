@@ -60,10 +60,10 @@
         </thead>
         <tbody>
           <tr v-for="row in report.value" :key="row.id">
-            <td>{{ row.worksite }}</td>
-            <td>{{ row.employee }}</td>
-            <td v-if="Array.isArray(row.equipment)">{{ row.equipment.join(', ') }}</td>
-            <td v-else>{{ row.equipment }}</td>
+            <td>{{ this.$store.getters.getWorksiteById(row.worksite).name }}</td>
+            <td>{{ this.$store.getters.getEmployeeById(row.employee).name }}</td>
+            <td v-if="Array.isArray(row.equipment)">{{ row.equipment.map(id => this.$store.getters.getEquipmentById(id).name).join(', ') }}</td>
+            <td v-else>{{ this.$store.getters.getEquipmentById(row.equipment).name }}</td>
             <td>{{ row.employee_cost.salary }}$</td>
             <td>{{ row.equipment_cost }}$</td>
             <td>{{ +row.equipment_cost + +row.employee_cost.salary }}$</td>
@@ -123,6 +123,7 @@ export default {
     await this.loadJobs();
     await this.loadEquipments();
     await this.loadEmployees();
+    await this.loadWorksites();
     this.isLoading = false;
   },
   computed: {
@@ -152,9 +153,7 @@ export default {
         await this.$store.dispatch('loadJobs');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
-          if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
-        }
         }
       }
       this.isLoading = false;
@@ -165,9 +164,7 @@ export default {
         await this.$store.dispatch('loadEquipments');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
-          if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
-        }
         }
       }
       this.isLoading = false;
@@ -178,9 +175,18 @@ export default {
         await this.$store.dispatch('loadEmployees');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
-          if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
         }
+      }
+      this.isLoading = false;
+    },
+    async loadWorksites() {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch('loadWorksites');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
         }
       }
       this.isLoading = false;
@@ -260,7 +266,7 @@ export default {
       this.$store.getters.jobs
         .filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date))
         .map((job, i) => {
-          this.report.value[i].employee_cost = this.$store.getters.employees.find((employee) => employee.name == job.employee);
+          this.report.value[i].employee_cost = this.$store.getters.employees.find((employee) => employee.id == job.employee);
         });
 
       this.$store.getters.jobs
@@ -268,13 +274,13 @@ export default {
         .map((job, i) => {
           this.report.value[i].equipment_cost = this.$store.getters.equipments.filter(
             (equipment) =>
-              (Array.isArray(job.equipment) && equipment.name == job.equipment[0]) ||
-              (Array.isArray(job.equipment) && equipment.name == job.equipment[1]) ||
-              (Array.isArray(job.equipment) && equipment.name == job.equipment[2]) ||
-              (Array.isArray(job.equipment) && equipment.name == job.equipment[3]) ||
-              (Array.isArray(job.equipment) && equipment.name == job.equipment[4]) ||
-              (Array.isArray(job.equipment) && equipment.name == job.equipment[5]) ||
-              (Array.isArray(job.equipment) && equipment.name == job.equipment[6])
+              (Array.isArray(job.equipment) && equipment.id == job.equipment[0]) ||
+              (Array.isArray(job.equipment) && equipment.id == job.equipment[1]) ||
+              (Array.isArray(job.equipment) && equipment.id == job.equipment[2]) ||
+              (Array.isArray(job.equipment) && equipment.id == job.equipment[3]) ||
+              (Array.isArray(job.equipment) && equipment.id == job.equipment[4]) ||
+              (Array.isArray(job.equipment) && equipment.id == job.equipment[5]) ||
+              (Array.isArray(job.equipment) && equipment.id == job.equipment[6])
           );
         });
 

@@ -221,7 +221,7 @@ export default {
       this.$store.getters.jobs
         .filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date))
         .map((job) => {
-          this.report.value.push(this.$store.getters.employees.find((employee) => employee.name == job.employee));
+          this.report.value.push(this.$store.getters.employees.find((employee) => employee.id == job.employee));
         });
 
       this.total.value = 0;

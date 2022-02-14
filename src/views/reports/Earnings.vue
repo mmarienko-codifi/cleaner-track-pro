@@ -4,7 +4,7 @@
     <div v-if="isLoading">
       <Spinner />
     </div>
-    <form class="reports form" @submit.prevent="submitForm" v-else-if="hasJobs">
+    <form class="reports form" @submit.prevent="submitForm" v-else-if="hasJobs && hasWorksites && hasEquipments">
       <div class="form__field" :class="{ 'form__field--invalid': !month.isValid }">
         <label class="form__label">
           <span class="form__span">Month</span>
@@ -58,18 +58,18 @@
         </thead>
         <tbody>
           <tr v-for="row in report.value" :key="row.id">
-            <td>{{ row.worksite }}</td>
+            <td>{{ this.$store.getters.getWorksiteById(row.worksite).name }}</td>
             <td>{{ row.service }}$</td>
-            <td>{{ row.service }}$</td>
-            <td>{{ +row.service + +row.service }}$</td>
+            <td>{{ row.equipment.map(id => this.$store.getters.getEquipmentById(id).usage).reduce((previousValue, currentValue) => +previousValue + +currentValue, 0) }}$</td>
+            <td>{{ +row.service + row.equipment.map(id => this.$store.getters.getEquipmentById(id).usage).reduce((previousValue, currentValue) => +previousValue + +currentValue, 0) }}$</td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
             <td><b>Total</b></td>
             <td>{{ total.value }}$</td>
-            <td>{{ total.value }}$</td>
-            <td>{{ +total.value + +total.value }}$</td>
+            <td>{{ total2.value }}$</td>
+            <td>{{ +total.value + +total2.value }}$</td>
           </tr>
         </tfoot>
       </table>
@@ -104,12 +104,17 @@ export default {
       total: {
         value: 0,
       },
+      total2: {
+        value: 0,
+      },
       formIsValid: true,
     };
   },
   async created() {
     this.isLoading = true;
     await this.loadJobs();
+    await this.loadWorksites();
+    await this.loadEquipments();
     this.isLoading = false;
   },
   computed: {
@@ -119,6 +124,12 @@ export default {
     hasJobs() {
       return !this.isLoading && this.$store.getters.hasJobs;
     },
+    hasWorksites() {
+      return !this.isLoading && this.$store.getters.hasWorksites;
+    },
+    hasEquipments() {
+      return !this.isLoading && this.$store.getters.hasEquipments;
+    },
   },
   methods: {
     async loadJobs() {
@@ -127,9 +138,29 @@ export default {
         await this.$store.dispatch('loadJobs');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
-          if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
         }
+      }
+      this.isLoading = false;
+    },
+    async loadWorksites() {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch('loadWorksites');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+      this.isLoading = false;
+    },
+    async loadEquipments() {
+      this.isLoading = true;
+      try {
+        await this.$store.dispatch('loadEquipments');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
         }
       }
       this.isLoading = false;
@@ -209,6 +240,10 @@ export default {
       this.total.value = 0;
 
       this.report.value.map((row) => (this.total.value += +row.service));
+
+      this.total2.value = 0;
+
+      this.report.value.map((row) => (this.total2.value += row.equipment.map(id => this.$store.getters.getEquipmentById(id).usage).reduce((previousValue, currentValue) => +previousValue + +currentValue, 0)));
     },
   },
 };
