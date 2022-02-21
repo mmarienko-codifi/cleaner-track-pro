@@ -59,10 +59,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="row in report.value" :key="row.id">
-            <td>{{ this.$store.getters.getWorksiteById(row.worksite).name }}</td>
+          <tr v-for="(row, i) in report.value" :key="row.id">
+            <td v-if="this.$store.getters.getWorksiteById(row.worksite).name != this.$store.getters.getWorksiteById(report.value[i-1]?.worksite)?.name">{{ this.$store.getters.getWorksiteById(row.worksite).name }}</td>
+            <td v-else></td>
             <td>{{ this.$store.getters.getEmployeeById(row.employee).name }}</td>
-            <td v-if="Array.isArray(row.equipment)">{{ row.equipment.map(id => this.$store.getters.getEquipmentById(id).name).join(', ') }}</td>
+            <td v-if="Array.isArray(row.equipment)">{{ row.equipment.map(id => this.$store.getters.getEquipmentById(id).name + ' (' + this.$store.getters.getEquipmentById(id).usage + '$)').join(', ') }}</td>
             <td v-else>{{ this.$store.getters.getEquipmentById(row.equipment).name }}</td>
             <td>{{ row.employee_cost.salary }}$</td>
             <td>{{ row.equipment_cost }}$</td>
@@ -85,6 +86,7 @@
 <script>
 import Spinner from '@/components/Spinner.vue';
 import ErrorPopup from '@/components/ErrorPopup.vue';
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   components: {
@@ -239,8 +241,15 @@ export default {
       this.report.value = [];
 
       this.jobs.value = this.$store.getters.jobs.filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date));
+      
+      if (!this.jobs.value[0]) {
+        notify({type: 'error', title: "Nothing found!" });
+        this.report.value = '';
+        return
+      }
+      
       this.$store.getters.worksites.forEach(worksite => {
-        this.$store.getters.jobs.forEach(job => {
+        this.jobs.value.forEach(job => {
           if (worksite.id == job.worksite) this.report.value.push(job);
         })
       })

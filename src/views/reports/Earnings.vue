@@ -80,6 +80,7 @@
 <script>
 import Spinner from '@/components/Spinner.vue';
 import ErrorPopup from '@/components/ErrorPopup.vue';
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   components: {
@@ -100,6 +101,9 @@ export default {
       },
       report: {
         value: '',
+      },
+      jobs: {
+        value: [],
       },
       total: {
         value: 0,
@@ -132,6 +136,19 @@ export default {
     },
   },
   methods: {
+    checkDate(start_date, end_date, item_start_date, item_end_date) {
+      function getDaysArray(start, end) {
+        for (var arr = [], dt = new Date(start); dt <= new Date(end); dt.setDate(dt.getDate() + 1)) {
+          arr.push(new Date(dt).toISOString().slice(0, 10));
+        }
+        return arr;
+      }
+
+      let selectDate = getDaysArray(start_date, end_date);
+      let itemDate = getDaysArray(item_start_date, item_end_date);
+
+      return itemDate.find((item) => selectDate.find(item2 => item2 == item));
+    },
     async loadJobs() {
       this.isLoading = true;
       try {
@@ -202,40 +219,34 @@ export default {
       const start_date = this.year.value + '-' + this.month.value + '-' + '01';
       const end_date = this.year.value + '-' + this.month.value + '-' + '31';
 
+      if (this.report.value != '') return;
+
+      const currentJobs = this.$store.getters.jobs.filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date));
+
       this.report.value = [];
+      
+      this.$store.getters.worksites.forEach(worksite => {
+        currentJobs.forEach(job => {
+          if (worksite.id == job.worksite) this.report.value.push(job);
+        })
+      })
 
-      var getDaysArray = function (start, end) {
-        for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
-          arr.push(new Date(dt).toISOString().slice(0, 10));
+      if (!this.report.value[0]) {
+        notify({type: 'error', title: "Nothing found!" });
+        this.report.value = '';
+        return
+      }
+
+      for (let i = 0; i < this.report.value.length; i++) {
+        const job = this.report.value[i];
+       
+        if (job.worksite == this.report.value[i + 1]?.worksite) {
+          job.service = +this.report.value[i].service + +this.report.value[i + 1].service;
+          job.equipment = this.report.value[i].equipment.concat(this.report.value[i + 1].equipment);
+          this.report.value.splice(i + 1, 1);
+          i -= 1;
         }
-        return arr;
-      };
-
-      function isInArray(array, value) {
-        return (
-          (
-            array.find((item) => {
-              return item == value;
-            }) || []
-          ).length > 0
-        );
       }
-
-      function checkDate(start_date, end_date, item_start_date, item_end_date) {
-        let includes = false;
-        let selectDate = getDaysArray(new Date(start_date), new Date(end_date));
-        let itemDate = getDaysArray(new Date(item_start_date), new Date(item_end_date));
-
-        itemDate.map((item) => {
-          if (isInArray(selectDate, item)) {
-            includes = true;
-          }
-        });
-
-        return includes;
-      }
-
-      this.report.value = this.$store.getters.jobs.filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date));
 
       this.total.value = 0;
 

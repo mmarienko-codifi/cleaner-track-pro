@@ -74,6 +74,7 @@
 <script>
 import Spinner from '@/components/Spinner.vue';
 import ErrorPopup from '@/components/ErrorPopup.vue';
+import { notify } from "@kyvg/vue3-notification";
 
 export default {
   components: {
@@ -122,6 +123,19 @@ export default {
     },
   },
   methods: {
+    checkDate(start_date, end_date, item_start_date, item_end_date) {
+      function getDaysArray(start, end) {
+        for (var arr = [], dt = new Date(start); dt <= new Date(end); dt.setDate(dt.getDate() + 1)) {
+          arr.push(new Date(dt).toISOString().slice(0, 10));
+        }
+        return arr;
+      }
+
+      let selectDate = getDaysArray(start_date, end_date);
+      let itemDate = getDaysArray(item_start_date, item_end_date);
+
+      return itemDate.find((item) => selectDate.find(item2 => item2 == item));
+    },
     async loadEmployees() {
       this.isLoading = true;
       try {
@@ -182,47 +196,26 @@ export default {
         return;
       }
 
+      if (this.report.value != '') return;
+
       const start_date = this.year.value + '-' + this.month.value + '-' + '01';
       const end_date = this.year.value + '-' + this.month.value + '-' + '31';
 
       this.report.value = [];
 
-      var getDaysArray = function (start, end) {
-        for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
-          arr.push(new Date(dt).toISOString().slice(0, 10));
-        }
-        return arr;
-      };
-
-      function isInArray(array, value) {
-        return (
-          (
-            array.find((item) => {
-              return item == value;
-            }) || []
-          ).length > 0
-        );
-      }
-
-      function checkDate(start_date, end_date, item_start_date, item_end_date) {
-        let includes = false;
-        let selectDate = getDaysArray(new Date(start_date), new Date(end_date));
-        let itemDate = getDaysArray(new Date(item_start_date), new Date(item_end_date));
-
-        itemDate.map((item) => {
-          if (isInArray(selectDate, item)) {
-            includes = true;
-          }
-        });
-
-        return includes;
-      }
-
       this.$store.getters.jobs
-        .filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date))
+        .filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date))
         .map((job) => {
           this.report.value.push(this.$store.getters.employees.find((employee) => employee.id == job.employee));
         });
+
+      if (!this.report.value[0]) {
+        notify({type: 'error', title: "Nothing found!" });
+        this.report.value = '';
+        return
+      }
+
+      this.report.value = [... new Set(this.report.value)]
 
       this.total.value = 0;
 
