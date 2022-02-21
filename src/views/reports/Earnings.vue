@@ -150,7 +150,6 @@ export default {
       return itemDate.find((item) => selectDate.find(item2 => item2 == item));
     },
     async loadJobs() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadJobs');
       } catch (error) {
@@ -158,10 +157,8 @@ export default {
           this.error = error.message || 'Something went wrong!';
         }
       }
-      this.isLoading = false;
     },
     async loadWorksites() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadWorksites');
       } catch (error) {
@@ -169,10 +166,8 @@ export default {
           this.error = error.message || 'Something went wrong!';
         }
       }
-      this.isLoading = false;
     },
     async loadEquipments() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadEquipments');
       } catch (error) {
@@ -180,7 +175,6 @@ export default {
           this.error = error.message || 'Something went wrong!';
         }
       }
-      this.isLoading = false;
     },
     validateMonth() {
       if (!this.month.value) {
@@ -219,34 +213,36 @@ export default {
       const start_date = this.year.value + '-' + this.month.value + '-' + '01';
       const end_date = this.year.value + '-' + this.month.value + '-' + '31';
 
-      if (this.report.value != '') return;
+      await this.loadJobs();
 
       const currentJobs = this.$store.getters.jobs.filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date));
-
-      this.report.value = [];
+      
+      const currentWorksites = [];
       
       this.$store.getters.worksites.forEach(worksite => {
         currentJobs.forEach(job => {
-          if (worksite.id == job.worksite) this.report.value.push(job);
+          if (worksite.id == job.worksite) currentWorksites.push(job);
         })
       })
 
-      if (!this.report.value[0]) {
+      if (!currentWorksites[0]) {
         notify({type: 'error', title: "Nothing found!" });
         this.report.value = '';
         return
       }
 
-      for (let i = 0; i < this.report.value.length; i++) {
-        const job = this.report.value[i];
+      for (let i = 0; i < currentWorksites.length; i++) {
+        const job = currentWorksites[i];
        
-        if (job.worksite == this.report.value[i + 1]?.worksite) {
-          job.service = +this.report.value[i].service + +this.report.value[i + 1].service;
-          job.equipment = this.report.value[i].equipment.concat(this.report.value[i + 1].equipment);
-          this.report.value.splice(i + 1, 1);
+        if (job.worksite == currentWorksites[i + 1]?.worksite) {
+          job.service = +job.service + +currentWorksites[i + 1].service;
+          job.equipment = job.equipment.concat(currentWorksites[i + 1].equipment);
+          currentWorksites.splice(i + 1, 1);
           i -= 1;
         }
       }
+
+      this.report.value = currentWorksites;
 
       this.total.value = 0;
 

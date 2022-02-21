@@ -137,7 +137,6 @@ export default {
       return itemDate.find((item) => selectDate.find(item2 => item2 == item));
     },
     async loadEmployees() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadEmployees');
       } catch (error) {
@@ -147,10 +146,8 @@ export default {
         }
         }
       }
-      this.isLoading = false;
     },
     async loadJobs() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadJobs');
       } catch (error) {
@@ -160,7 +157,6 @@ export default {
         }
         }
       }
-      this.isLoading = false;
     },
     validateMonth() {
       if (!this.month.value) {
@@ -196,7 +192,7 @@ export default {
         return;
       }
 
-      if (this.report.value != '') return;
+      await this.loadJobs();
 
       const start_date = this.year.value + '-' + this.month.value + '-' + '01';
       const end_date = this.year.value + '-' + this.month.value + '-' + '31';
