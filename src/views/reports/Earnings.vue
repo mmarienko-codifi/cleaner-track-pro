@@ -50,7 +50,7 @@
       <table>
         <thead>
           <tr>
-            <th>Worksite</th>
+            <th>Client</th>
             <th>Employee revenue</th>
             <th>Equipment revenue</th>
             <th>Total revenue</th>
@@ -58,7 +58,7 @@
         </thead>
         <tbody>
           <tr v-for="row in report.value" :key="row.id">
-            <td>{{ this.$store.getters.getWorksiteById(row.worksite).name }}</td>
+            <td>{{ this.$store.getters.getWorksiteById(row.worksite).client }}</td>
             <td>{{ row.service }}$</td>
             <td>{{ row.equipment.map(id => this.$store.getters.getEquipmentById(id).usage).reduce((previousValue, currentValue) => +previousValue + +currentValue, 0) }}$</td>
             <td>{{ +row.service + row.equipment.map(id => this.$store.getters.getEquipmentById(id).usage).reduce((previousValue, currentValue) => +previousValue + +currentValue, 0) }}$</td>
