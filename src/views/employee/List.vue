@@ -5,16 +5,14 @@
       <Spinner />
     </div>
     <ul class="employees__list list" v-else-if="hasEmployees">
-      <li class="list__item" :class="{'list__item--busy': this.$store.getters.hasJobs && getActiveJobs(employee).length > 0,'list__item--deactivated': !employee.status}" v-for="employee in getEmployees" :key="employee.id">
+      <li class="list__item" :class="{'list__item--busy': this.$store.getters.hasJobs && getActiveJob(employee),'list__item--deactivated': !employee.status}" v-for="employee in getEmployees" :key="employee.id">
         <router-link class="list__link" :to="'/employees/' + employee.id + '/read'">
-          <span class="list__title"> {{ employee.name }} | {{ employee.salary }}$ | {{ employee.phone }} </span>
+          <span class="list__title"> {{ employee.name }}</span>
           <router-link class="list__button button" :to="'/employees/' + employee.id + '/read'"> Details </router-link>
           <router-link class="list__button button button--edit" :to="'/employees/' + employee.id + '/update'"> Edit </router-link>
           <a class="list__button button button--delete" v-if="employee.status == true" @click.prevent="deleteEmployee(employee)"> Deactivate </a>
           <a class="list__button button button--activate" v-else @click.prevent="activateEmployee(employee)"> Activate </a>
         </router-link>
-        <span class="list__busy" v-if="this.$store.getters.hasJobs && getActiveJobs(employee).length == 1"> has one job </span>
-        <span class="list__busy" v-else-if="this.$store.getters.hasJobs && getActiveJobs(employee).length > 1"> has many jobs </span>
         <span class="list__deactivated" v-if="!employee.status"> deactivated </span>
       </li>
     </ul>
@@ -52,8 +50,8 @@ export default {
     },
   },
   methods: {
-    getActiveJobs(employee) {
-      return this.$store.getters.jobs.filter((job) => job.employee == employee.id && job.status);
+    getActiveJob(employee) {
+      return this.$store.getters.jobs.find((job) => job.employee == employee.id && job.status);
     },
     async loadEmployees() {
       this.isLoading = true;
@@ -80,8 +78,8 @@ export default {
     async deleteEmployee(data) {
       this.isLoading = true;
 
-      if (this.$store.getters.hasJobs && this.getActiveJobs(data).length > 0) {
-        notify({type: 'error', title: "The employee has jobs. You cannot deactivate it." });
+      if (this.$store.getters.hasJobs && this.getActiveJob(data)) {
+        notify({type: 'error', title: "The employee has active jobs" });
         this.isLoading = false;
         return;
       }

@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     getWorksites() {
-      return this.$store.getters.worksites.filter((worksite) => worksite.status && !worksite.client);
+      return this.$store.getters.worksites.filter((worksite) => worksite.status);
     },
     getEmployees() {
       return this.$store.getters.employees.filter((employee) => employee.status);
@@ -69,6 +69,13 @@ export default {
     },
   },
   methods: {
+    hasDeactivatedProps(job) {
+      const deactivatedWorksite = this.$store.getters.worksites.find((worksite) => worksite.id == job.worksite && !worksite.status);
+      const deactivatedEmployee = this.$store.getters.employees.find((employee) => employee.id == job.employee && !employee.status);
+      const deactivatedEquipment = job.equipment.find(equipment => !this.$store.getters.getEquipmentById(equipment).status);
+
+      return deactivatedWorksite || deactivatedEmployee || deactivatedEquipment;
+    },
     async loadWorksites() {
       try {
         await this.$store.dispatch('loadWorksites');
@@ -103,7 +110,6 @@ export default {
       }
     },
     async loadJobs() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadJobs');
       } catch (error) {
@@ -113,7 +119,6 @@ export default {
         }
         }
       }
-      this.isLoading = false;
     },
     async deleteJob(data) {
       this.isLoading = true;
@@ -122,21 +127,10 @@ export default {
 
       formData.status = false;
 
-      const selectedWorksite = this.$store.getters.worksites.find((worksite) => worksite.id == data.worksite);
-      selectedWorksite.link = null;
-
       try {
         await this.$store.dispatch('editJob', formData);
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
-          this.error = error.message || 'Something went wrong!';
-        }
-      }
-
-      try {
-        await this.$store.dispatch('editWorksite', selectedWorksite);
-      } catch (error) {
-        if (error.message != "Cannot read properties of undefined (reading 'push')") {
           this.error = error.message || 'Something went wrong!';
         }
       }
@@ -148,35 +142,24 @@ export default {
       this.isLoading = true;
 
       const formData = this.$store.getters.getJobById(data.id);
-      const selectedWorksite = this.$store.getters.worksites.find((worksite) => worksite.id == data.worksite);
 
-      if (!selectedWorksite.link) {
-        selectedWorksite.link = formData.id;
-        formData.status = true;
-      } else {
-        notify({type: 'error', title: "The job has busy worksite. You cannot activate it." });
+      if (this.$store.getters.hasJobs && this.hasDeactivatedProps(formData)) {
+        notify({type: 'error', title: "The job has deactivated props" });
         this.isLoading = false;
-        return;
+        return
       }
+
+      formData.status = true;
 
       try {
         await this.$store.dispatch('editJob', formData);
+        this.isLoading = false;
+        this.$router.replace('/jobs/list');
       } catch (error) {
         if (error.message != 'Cannot convert undefined or null to object') {
           this.error = error.message || 'Something went wrong!';
         }
       }
-
-      try {
-        await this.$store.dispatch('editWorksite', selectedWorksite);
-      } catch (error) {
-        if (error.message != "Cannot read properties of undefined (reading 'push')") {
-          this.error = error.message || 'Something went wrong!';
-        }
-      }
-
-      this.isLoading = false;
-      this.$router.replace('/jobs/list');
     },
   },
 };

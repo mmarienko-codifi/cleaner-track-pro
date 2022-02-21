@@ -66,7 +66,6 @@ export default {
       this.address.value = this.worksite.address;
       this.type.value = this.worksite.type;
       this.status.value = this.worksite.status;
-      this.link.value = this.worksite.link;
     }
     this.isLoading = true;
     await this.loadClients();
@@ -93,10 +92,6 @@ export default {
       },
       status: {
         value: true,
-        isValid: true,
-      },
-      link: {
-        value: 'company',
         isValid: true,
       },
       formIsValid: true,
@@ -195,7 +190,6 @@ export default {
         address: this.address.value,
         type: this.type.value,
         status: this.status.value,
-        link: this.link?.value,
       };
 
       this.$store.dispatch('editWorksite', formData);

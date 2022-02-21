@@ -5,17 +5,15 @@
       <Spinner />
     </div>
     <ul class="equipments__list list" v-else-if="hasEquipments">
-      <li class="list__item" :class="{'list__item--busy': this.$store.getters.hasJobs && getActiveJobs(equipment).length > 0, 'list__item--deactivated': !equipment.status}" v-for="equipment in getEquipments" :key="equipment.id">
+      <li class="list__item" :class="{'list__item--busy': this.$store.getters.hasJobs && getActiveJob(equipment), 'list__item--deactivated': !equipment.status}" v-for="equipment in getEquipments" :key="equipment.id">
         <router-link class="list__link" :to="'/equipment/' + equipment.id + '/read'">
-          <span class="list__title"> {{ equipment.name }} | {{ equipment.usage }}$ | {{ equipment.storage }} </span>
+          <span class="list__title"> {{ equipment.name }} ({{ equipment.usage }}$)</span>
           <router-link class="list__button button" :to="'/equipment/' + equipment.id + '/read'"> Details </router-link>
           <router-link class="list__button button button--edit" :to="'/equipment/' + equipment.id + '/update'"> Edit </router-link>
           <a class="list__button button button--delete" v-if="equipment.status == true" @click.prevent="deleteEquipment(equipment)"> Deactivate </a>
           <a class="list__button button button--activate" v-else @click.prevent="activateEquipment(equipment)"> Activate </a>
         </router-link>
-        <span class="list__busy" v-if="this.$store.getters.hasJobs && getActiveJobs(equipment).length == 1"> has one job </span>
-        <span class="list__busy" v-else-if="this.$store.getters.hasJobs && getActiveJobs(equipment).length > 1"> has many jobs </span>
-        <span class="list__deactivated" v-else-if="!equipment.status"> deactivated </span>
+        <span class="list__deactivated" v-if="!equipment.status"> deactivated </span>
       </li>
     </ul>
     <div class="list__not-found" v-else>No equipments found</div>
@@ -40,8 +38,10 @@ export default {
     };
   },
   async created() {
+    this.isLoading = true;
     await this.loadJobs();
     await this.loadEquipments();
+    this.isLoading = false;
   },
   computed: {
     getEquipments() {
@@ -52,11 +52,12 @@ export default {
     },
   },
   methods: {
-    getActiveJobs(equipment) {
-      return this.$store.getters.jobs.filter((job) => job.equipment[0] == equipment.id || job.equipment[1] == equipment.id || job.equipment[2] == equipment.id || job.equipment[3] == equipment.id || job.equipment[4] == equipment.id || job.equipment[5] == equipment.id || job.equipment[6] == equipment.id && job.status);
+    getActiveJob(equipment) {
+      return this.$store.getters.jobs.find((job) => {
+        return job.equipment.find(jobEquipment => jobEquipment == equipment.id && job.status);
+      });
     },
     async loadEquipments() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadEquipments');
       } catch (error) {
@@ -66,10 +67,8 @@ export default {
         }
         }
       }
-      this.isLoading = false;
     },
     async loadJobs() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadJobs');
       } catch (error) {
@@ -79,13 +78,12 @@ export default {
         }
         }
       }
-      this.isLoading = false;
     },
     async deleteEquipment(data) {
       this.isLoading = true;
 
-      if (this.$store.getters.hasJobs && this.getActiveJobs(data).length > 0) {
-        notify({type: 'error', title: "The equipment has jobs. You cannot deactivate it." });
+      if (this.$store.getters.hasJobs && this.getActiveJob(data)) {
+        notify({type: 'error', title: "The equipment has active jobs" });
         this.isLoading = false;
         return;
       }

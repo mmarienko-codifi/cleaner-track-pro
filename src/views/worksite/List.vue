@@ -5,7 +5,7 @@
       <Spinner />
     </div>
     <ul class="worksites__list list" v-else-if="hasWorksites">
-      <li class="list__item" :class="{'list__item--busy': worksite.link, 'list__item--deactivated': !worksite.status}" v-for="worksite in getWorksites" :key="worksite.id">
+      <li class="list__item" :class="{'list__item--busy': this.$store.getters.hasWorksites && getActiveJob(worksite), 'list__item--deactivated': !worksite.status}" v-for="worksite in getWorksites" :key="worksite.id">
         <router-link class="list__link" :to="'/worksites/' + worksite.id + '/read'">
           <span class="list__title"> {{ worksite.name }} ({{ worksite.address }}) </span>
           <router-link class="list__button button" :to="'/worksites/' + worksite.id + '/read'"> Details </router-link>
@@ -13,8 +13,7 @@
           <a class="list__button button button--delete" v-if="worksite.status == true" @click.prevent="deleteWorksite(worksite)"> Deactivate </a>
           <a class="list__button button button--activate" v-else @click.prevent="activateWorksite(worksite)"> Activate </a>
         </router-link>
-        <span class="list__busy" v-if="worksite.link"> busy </span>
-        <span class="list__deactivated" v-else-if="!worksite.status"> deactivated </span>
+        <span class="list__deactivated" v-if="!worksite.status"> deactivated </span>
       </li>
     </ul>
     <div class="list__not-found" v-else>No worksites found</div>
@@ -41,8 +40,11 @@ export default {
       }
     };
   },
-  created() {
-    this.loadWorksites();
+  async created() {
+    this.isLoading = true;
+    await this.loadWorksites();
+    await this.loadJobs();
+    this.isLoading = false;
   },
   computed: {
     getWorksites() {
@@ -53,8 +55,10 @@ export default {
     },
   },
   methods: {
+    getActiveJob(worksite) {
+      return this.$store.getters.jobs.find((job) => job.worksite == worksite.id && job.status);
+    },
     async loadWorksites() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadWorksites');
       } catch (error) {
@@ -62,15 +66,23 @@ export default {
           this.error = error.message || 'Something went wrong!';
         }
       }
-      this.isLoading = false;
+    },
+    async loadJobs() {
+      try {
+        await this.$store.dispatch('loadJobs');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
     },
     async deleteWorksite(data) {
       this.isLoading = true;
 
       const formData = this.$store.getters.getWorksiteById(data.id);
 
-      if (formData.link) {
-        notify({type: 'error', title: "The worksite is busy. You cannot delete it." });
+      if (this.$store.getters.hasJobs && this.getActiveJob(data)) {
+        notify({type: 'error', title: "The worksite has active jobs" });
         this.isLoading = false;
         return;
       }
@@ -79,11 +91,11 @@ export default {
 
       try {
         await this.$store.dispatch('editWorksite', formData);
+        this.isLoading = false;
+        this.$router.replace('/worksites/list');
       } catch (error) {
         this.error = error.message || 'Something went wrong!';
       }
-      this.isLoading = false;
-      this.$router.replace('/worksites/list');
     },
     async activateWorksite(data) {
       this.isLoading = true;
@@ -94,11 +106,11 @@ export default {
 
       try {
         await this.$store.dispatch('editWorksite', formData);
+        this.isLoading = false;
+        this.$router.replace('/worksites/list');
       } catch (error) {
         this.error = error.message || 'Something went wrong!';
       }
-      this.isLoading = false;
-      this.$router.replace('/worksites/list');
     },
   },
 };

@@ -33,7 +33,6 @@ export default {
         address: data.address,
         type: data.type,
         status: data.status,
-        link: data.link,
       };
   
       const response = await fetch(`${process.env.VUE_APP_FIREBASE_DATABASE_URL}/worksites/${data.id}.json`, {
@@ -67,7 +66,6 @@ export default {
           address: responseData[key].address,
           type: responseData[key].type,
           status: responseData[key].status,
-          link: responseData[key].link,
         });
         return array;
       }, []);

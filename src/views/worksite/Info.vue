@@ -3,7 +3,7 @@
     <ul class="worksite__list list">
       <li class="list__item">
         <div class="list__link">
-          <span class="list__key">Client:</span><span class="list__value">{{ this.worksite.client }}</span>
+          <span class="list__key">Client:</span><span class="list__value">{{ this.$store.getters.getClientById(this.worksite.client).name }}</span>
         </div>
       </li>
       <li class="list__item">

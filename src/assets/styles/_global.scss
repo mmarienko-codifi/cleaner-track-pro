@@ -90,13 +90,7 @@
     }
 
     &--busy {
-      background-color: var(--color-busy);
-
-      @media (min-width: 768px) {
-        .list__title {
-          transform: translateY(-7px);
-        }
-      }
+      box-shadow: 5px 0px 3px 1px var(--color-busy) inset;
     }
 
     & + & {
@@ -473,6 +467,7 @@
     background-color: var(--color-deactivated);
   }
   td {
+    vertical-align: top;
     background-color: var(--color-form);
   }
   table,
@@ -486,7 +481,6 @@
 .notifications.notification-app {
   margin: 0 10px 5px;
   padding: 15px;
-  font-size: 18px;
   font-family: Helvetica, Arial, sans-serif;
   color: var(--color-main);
 

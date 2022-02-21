@@ -123,7 +123,7 @@ export default {
   },
   computed: {
     getWorksites() {
-      return this.$store.getters.worksites.filter(worksite => (worksite.status && !worksite.link) || ( worksite.id == this.job.worksite));
+      return this.$store.getters.worksites.filter(worksite => worksite.status);
     },
     getEmployees() {
       return this.$store.getters.employees.filter(employee => employee.status);
@@ -326,8 +326,6 @@ export default {
         end_date: this.end_date.value,
         status: this.status.value,
       };
-
-      this.job = this.$store.getters.getJobById(this.id);
 
       this.$store.dispatch('editJob', formData);
       notify({type: 'success', title: "The job was edited!" });

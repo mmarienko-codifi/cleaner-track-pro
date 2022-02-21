@@ -152,7 +152,7 @@ export default {
   },
   computed: {
     getWorksites() {
-      return this.$store.getters.worksites.filter((worksite) => worksite.status && !worksite.link);
+      return this.$store.getters.worksites.filter((worksite) => worksite.status);
     },
     getEmployees() {
       return this.$store.getters.employees.filter((employee) => employee.status);
@@ -314,30 +314,16 @@ export default {
         status: true,
       };
 
-      const selectedWorksite = this.$store.getters.worksites.find((worksite) => worksite.id == this.worksite.value);
-      selectedWorksite.link = formData.id;
-
       try {
         await this.$store.dispatch('addJob', formData);
+        notify({type: 'success', title: "The job was added!" });
+        this.$router.replace('/jobs/list');
       } catch (error) {
         if (error.message != "Cannot read properties of undefined (reading 'push')") {
           this.error = error.message || 'Something went wrong!';
           return;
         }
       }
-
-      try {
-        await this.$store.dispatch('editWorksite', selectedWorksite);
-      } catch (error) {
-        if (error.message != "Cannot read properties of undefined (reading 'push')") {
-          this.error = error.message || 'Something went wrong!';
-          return;
-        }
-      }
-
-      notify({type: 'success', title: "The job was added!" });
-
-      this.$router.replace('/jobs/list');
     },
   },
 };

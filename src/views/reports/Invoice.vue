@@ -103,6 +103,9 @@ export default {
         value: '',
         isValid: true,
       },
+      jobs: {
+        value: [],
+      },
       report: {
         value: '',
       },
@@ -148,7 +151,6 @@ export default {
   },
   methods: {
     async loadJobs() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadJobs');
       } catch (error) {
@@ -156,10 +158,8 @@ export default {
           this.error = error.message || 'Something went wrong!';
         }
       }
-      this.isLoading = false;
     },
     async loadEquipments() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadEquipments');
       } catch (error) {
@@ -167,10 +167,8 @@ export default {
           this.error = error.message || 'Something went wrong!';
         }
       }
-      this.isLoading = false;
     },
     async loadEmployees() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadEmployees');
       } catch (error) {
@@ -178,10 +176,8 @@ export default {
           this.error = error.message || 'Something went wrong!';
         }
       }
-      this.isLoading = false;
     },
     async loadWorksites() {
-      this.isLoading = true;
       try {
         await this.$store.dispatch('loadWorksites');
       } catch (error) {
@@ -189,7 +185,19 @@ export default {
           this.error = error.message || 'Something went wrong!';
         }
       }
-      this.isLoading = false;
+    },
+    checkDate(start_date, end_date, item_start_date, item_end_date) {
+      function getDaysArray(start, end) {
+        for (var arr = [], dt = new Date(start); dt <= new Date(end); dt.setDate(dt.getDate() + 1)) {
+          arr.push(new Date(dt).toISOString().slice(0, 10));
+        }
+        return arr;
+      }
+
+      let selectDate = getDaysArray(start_date, end_date);
+      let itemDate = getDaysArray(item_start_date, item_end_date);
+
+      return itemDate.find((item) => selectDate.find(item2 => item2 == item));
     },
     validateMonth() {
       if (!this.month.value) {
@@ -230,49 +238,23 @@ export default {
 
       this.report.value = [];
 
-      var getDaysArray = function (start, end) {
-        for (var arr = [], dt = new Date(start); dt <= end; dt.setDate(dt.getDate() + 1)) {
-          arr.push(new Date(dt).toISOString().slice(0, 10));
-        }
-        return arr;
-      };
-
-      function isInArray(array, value) {
-        return (
-          (
-            array.find((item) => {
-              return item == value;
-            }) || []
-          ).length > 0
-        );
-      }
-
-      function checkDate(start_date, end_date, item_start_date, item_end_date) {
-        let includes = false;
-        let selectDate = getDaysArray(new Date(start_date), new Date(end_date));
-        let itemDate = getDaysArray(new Date(item_start_date), new Date(item_end_date));
-
-        itemDate.map((item) => {
-          if (isInArray(selectDate, item)) {
-            includes = true;
-          }
-        });
-
-        return includes;
-      }
-
-      this.report.value = this.$store.getters.jobs.filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date));
+      this.jobs.value = this.$store.getters.jobs.filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date));
+      this.$store.getters.worksites.forEach(worksite => {
+        this.$store.getters.jobs.forEach(job => {
+          if (worksite.id == job.worksite) this.report.value.push(job);
+        })
+      })
 
       this.$store.getters.jobs
-        .filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date))
+        .filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date))
         .map((job, i) => {
-          this.report.value[i].employee_cost = this.$store.getters.employees.find((employee) => employee.id == job.employee);
+          this.jobs.value[i].employee_cost = this.$store.getters.employees.find((employee) => employee.id == job.employee);
         });
 
       this.$store.getters.jobs
-        .filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date))
+        .filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date))
         .map((job, i) => {
-          this.report.value[i].equipment_cost = this.$store.getters.equipments.filter(
+          this.jobs.value[i].equipment_cost = this.$store.getters.equipments.filter(
             (equipment) =>
               (Array.isArray(job.equipment) && equipment.id == job.equipment[0]) ||
               (Array.isArray(job.equipment) && equipment.id == job.equipment[1]) ||
@@ -284,7 +266,7 @@ export default {
           );
         });
 
-      this.report.value.forEach((element) => {
+      this.jobs.value.forEach((element) => {
         let accum = 0;
         element.equipment_cost.forEach((current) => {
           accum = +current.usage + accum;
@@ -293,19 +275,19 @@ export default {
         element.equipment_cost = accum;
       });
 
-      this.report.value = this.$store.getters.jobs.filter((job) => checkDate(start_date, end_date, job.start_date, job.end_date));
+      this.jobs.value = this.$store.getters.jobs.filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date));
 
       
 
-      this.report.value.map((row) => (this.total.value += +row.service));
+      this.jobs.value.map((row) => (this.total.value += +row.service));
 
       this.total1.value = 0;
 
-      this.report.value.map((row) => (this.total1.value += +row.employee_cost.salary));
+      this.jobs.value.map((row) => (this.total1.value += +row.employee_cost.salary));
 
       this.total2.value = 0;
 
-      this.report.value.map((row) => (this.total2.value += +row.equipment_cost));
+      this.jobs.value.map((row) => (this.total2.value += +row.equipment_cost));
 
       this.total.value = +this.total1.value + +this.total2.value;
     },
