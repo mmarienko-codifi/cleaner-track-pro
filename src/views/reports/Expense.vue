@@ -57,13 +57,13 @@
         <tbody>
           <tr v-for="row in report.value" :key="row.id">
             <td>{{ row.name }}</td>
-            <td>{{ row.salary }}$</td>
+            <td><b>{{ row.salary }}$</b></td>
           </tr>
         </tbody>
         <tfoot>
           <tr>
             <td><b>Total</b></td>
-            <td>{{ total.value }}$</td>
+            <td><b>{{ total.value }}$</b></td>
           </tr>
         </tfoot>
       </table>

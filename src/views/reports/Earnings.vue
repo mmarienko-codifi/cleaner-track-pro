@@ -50,7 +50,7 @@
       <table>
         <thead>
           <tr>
-            <th>Client</th>
+            <th>Client name</th>
             <th>Employee revenue</th>
             <th>Equipment revenue</th>
             <th>Total revenue</th>
@@ -58,10 +58,10 @@
         </thead>
         <tbody>
           <tr v-for="row in report.value" :key="row.id">
-            <td>{{ this.$store.getters.getWorksiteById(row.worksite).client }}</td>
+            <td>{{ this.$store.getters.getClientById(this.$store.getters.getWorksiteById(row.worksite).client).name }}</td>
             <td>{{ row.service }}$</td>
             <td>{{ row.equipment.map(id => this.$store.getters.getEquipmentById(id).usage).reduce((previousValue, currentValue) => +previousValue + +currentValue, 0) }}$</td>
-            <td>{{ +row.service + row.equipment.map(id => this.$store.getters.getEquipmentById(id).usage).reduce((previousValue, currentValue) => +previousValue + +currentValue, 0) }}$</td>
+            <td><b>{{ +row.service + row.equipment.map(id => this.$store.getters.getEquipmentById(id).usage).reduce((previousValue, currentValue) => +previousValue + +currentValue, 0) }}$</b></td>
           </tr>
         </tbody>
         <tfoot>
@@ -69,7 +69,7 @@
             <td><b>Total</b></td>
             <td>{{ total.value }}$</td>
             <td>{{ total2.value }}$</td>
-            <td>{{ +total.value + +total2.value }}$</td>
+            <td><b>{{ +total.value + +total2.value }}$</b></td>
           </tr>
         </tfoot>
       </table>
@@ -116,6 +116,7 @@ export default {
   },
   async created() {
     this.isLoading = true;
+    await this.loadClients();
     await this.loadJobs();
     await this.loadWorksites();
     await this.loadEquipments();
@@ -148,6 +149,15 @@ export default {
       let itemDate = getDaysArray(item_start_date, item_end_date);
 
       return itemDate.find((item) => selectDate.find(item2 => item2 == item));
+    },
+    async loadClients() {
+      try {
+        await this.$store.dispatch('loadClients');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
     },
     async loadJobs() {
       try {
@@ -229,6 +239,17 @@ export default {
         notify({type: 'error', title: "Nothing found!" });
         this.report.value = '';
         return
+      }
+
+      for (let i = 0; i < currentWorksites.length; i++) {
+        const job = currentWorksites[i];
+       
+        if (this.$store.getters.getWorksiteById(job.worksite).client == this.$store.getters.getWorksiteById(currentWorksites[i + 1]?.worksite)?.client ) {
+          job.service = +job.service + +currentWorksites[i + 1].service;
+          job.equipment = job.equipment.concat(currentWorksites[i + 1].equipment);
+          currentWorksites.splice(i + 1, 1);
+          i -= 1;
+        }
       }
 
       for (let i = 0; i < currentWorksites.length; i++) {

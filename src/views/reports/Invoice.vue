@@ -43,6 +43,15 @@
           <p class="form__error" v-if="!year.isValid">Year must not be empty</p>
         </label>
       </div>
+      <div class="form__field" :class="{ 'form__field--invalid': !client.isValid }">
+        <label class="form__label">
+          <span class="form__span">Client</span>
+          <select class="form__select" v-model="client.value" @blur="validateClient()">
+            <option :value="client.id" v-for="client in getClients" :key="client.id">{{ client.name }}</option>
+          </select>
+          <p class="form__error" v-if="!year.isValid">Client must not be empty</p>
+        </label>
+      </div>
       <button class="form__button button">Create report</button>
     </form>
     <div class="list__not-found" v-else>No jobs found</div>
@@ -59,15 +68,14 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(row, i) in report.value" :key="row.id">
-            <td v-if="this.$store.getters.getWorksiteById(row.worksite).name != this.$store.getters.getWorksiteById(report.value[i-1]?.worksite)?.name">{{ this.$store.getters.getWorksiteById(row.worksite).name }}</td>
-            <td v-else></td>
+          <tr v-for="(row) in report.value" :key="row.id">
+            <td>{{ this.$store.getters.getWorksiteById(row.worksite).name }}</td>
             <td>{{ this.$store.getters.getEmployeeById(row.employee).name }}</td>
             <td v-if="Array.isArray(row.equipment)">{{ row.equipment.map(id => this.$store.getters.getEquipmentById(id).name + ' (' + this.$store.getters.getEquipmentById(id).usage + '$)').join(', ') }}</td>
             <td v-else>{{ this.$store.getters.getEquipmentById(row.equipment).name }}</td>
             <td>{{ row.employee_cost.salary }}$</td>
             <td>{{ row.equipment_cost }}$</td>
-            <td>{{ +row.equipment_cost + +row.employee_cost.salary }}$</td>
+            <td><b>{{ +row.equipment_cost + +row.employee_cost.salary }}$</b></td>
           </tr>
         </tbody>
         <tfoot>
@@ -75,7 +83,7 @@
             <td colspan="3"><b>Total</b></td>
             <td>{{ total1.value }}$</td>
             <td>{{ total2.value }}$</td>
-            <td>{{ total.value }}$</td>
+            <td><b>{{ total.value }}$</b></td>
           </tr>
         </tfoot>
       </table>
@@ -105,6 +113,10 @@ export default {
         value: '',
         isValid: true,
       },
+      client: {
+        value: '',
+        isValid: true,
+      },
       jobs: {
         value: [],
       },
@@ -125,6 +137,7 @@ export default {
   },
   async created() {
     this.isLoading = true;
+    await this.loadClients();
     await this.loadJobs();
     await this.loadEquipments();
     await this.loadEmployees();
@@ -132,6 +145,12 @@ export default {
     this.isLoading = false;
   },
   computed: {
+    getClients() {
+      return this.$store.getters.clients.filter(client => client.status);
+    },
+    hasClients() {
+      return !this.isLoading && this.$store.getters.hasClients;
+    },
     getJobs() {
       return this.$store.getters.jobs;
     },
@@ -152,6 +171,15 @@ export default {
     },
   },
   methods: {
+    async loadClients() {
+      try {
+        await this.$store.dispatch('loadClients');
+      } catch (error) {
+        if (error.message != 'Cannot convert undefined or null to object') {
+          this.error = error.message || 'Something went wrong!';
+        }
+      }
+    },
     async loadJobs() {
       try {
         await this.$store.dispatch('loadJobs');
@@ -219,12 +247,24 @@ export default {
         return true;
       }
     },
+    validateClient() {
+      if (this.client.value == '') {
+        this.client.isValid = false;
+        return false;
+      } else {
+        this.client.isValid = true;
+        return true;
+      }
+    },
     validateForm() {
       this.formIsValid = true;
       if (!this.validateMonth()) {
         this.formIsValid = false;
       }
       if (!this.validateYear()) {
+        this.formIsValid = false;
+      }
+      if (!this.validateClient()) {
         this.formIsValid = false;
       }
     },
@@ -240,14 +280,14 @@ export default {
 
       this.report.value = [];
 
-      this.jobs.value = this.$store.getters.jobs.filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date));
+      this.jobs.value = this.$store.getters.jobs.filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date) && this.$store.getters.getWorksiteById(job.worksite).client == this.client.value );
       
       if (!this.jobs.value[0]) {
         notify({type: 'error', title: "Nothing found!" });
         this.report.value = '';
         return
       }
-      
+        
       this.$store.getters.worksites.forEach(worksite => {
         this.jobs.value.forEach(job => {
           if (worksite.id == job.worksite) this.report.value.push(job);
@@ -255,13 +295,12 @@ export default {
       })
 
       this.$store.getters.jobs
-        .filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date))
+        .filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date)  && this.$store.getters.getWorksiteById(job.worksite).client == this.client.value )
         .map((job, i) => {
           this.jobs.value[i].employee_cost = this.$store.getters.employees.find((employee) => employee.id == job.employee);
         });
-
       this.$store.getters.jobs
-        .filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date))
+        .filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date)  && this.$store.getters.getWorksiteById(job.worksite).client == this.client.value )
         .map((job, i) => {
           this.jobs.value[i].equipment_cost = this.$store.getters.equipments.filter(
             (equipment) =>
@@ -275,6 +314,8 @@ export default {
           );
         });
 
+      
+
       this.jobs.value.forEach((element) => {
         let accum = 0;
         element.equipment_cost.forEach((current) => {
@@ -284,7 +325,7 @@ export default {
         element.equipment_cost = accum;
       });
 
-      this.jobs.value = this.$store.getters.jobs.filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date));
+      this.jobs.value = this.$store.getters.jobs.filter((job) => this.checkDate(start_date, end_date, job.start_date, job.end_date) && this.$store.getters.getWorksiteById(job.worksite).client == this.client.value );
 
       
 
